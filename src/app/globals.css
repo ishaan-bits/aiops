@@ -50,6 +50,40 @@
 
 :root {
   --radius: 0.625rem;
+  --background: #F8F9FC;
+  --foreground: #0F1219;
+  --card: #FFFFFF;
+  --card-foreground: #0F1219;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F1219;
+  --primary: #6366F1;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1F3F9;
+  --secondary-foreground: #374151;
+  --muted: #F1F3F9;
+  --muted-foreground: #6B7280;
+  --accent: rgba(99,102,241,0.08);
+  --accent-foreground: #6366F1;
+  --destructive: #EF4444;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #6366F1;
+  --chart-1: #6366F1;
+  --chart-2: #8B5CF6;
+  --chart-3: #10B981;
+  --chart-4: #F59E0B;
+  --chart-5: #EC4899;
+  --sidebar: #F8F9FC;
+  --sidebar-foreground: #374151;
+  --sidebar-primary: #6366F1;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: rgba(99,102,241,0.08);
+  --sidebar-accent-foreground: #0F1219;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #6366F1;
+}
+
+.dark {
   --background: #07090D;
   --foreground: #E8EAF0;
   --card: rgba(255,255,255,0.06);
@@ -89,16 +123,20 @@
   }
   body {
     @apply bg-background text-foreground;
-    background: #07090D;
-    background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.15), transparent),
-      radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139,92,246,0.08), transparent),
-      radial-gradient(ellipse 50% 30% at 20% 80%, rgba(79,70,229,0.06), transparent);
-    background-attachment: fixed;
   }
   html {
     @apply font-sans;
   }
+}
+
+/* ── Body gradient (dark only) ──────────────────────── */
+.dark body {
+  background: #07090D;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.15), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139,92,246,0.08), transparent),
+    radial-gradient(ellipse 50% 30% at 20% 80%, rgba(79,70,229,0.06), transparent);
+  background-attachment: fixed;
 }
 
 /* ── Glass Card Utility ─────────────────────────────── */
@@ -109,6 +147,10 @@
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 1.5rem;
 }
+:root .glass {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+}
 
 .glass-subtle {
   background: rgba(255,255,255,0.04);
@@ -116,6 +158,10 @@
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 1.25rem;
+}
+:root .glass-subtle {
+  background: #F1F3F9;
+  border: 1px solid #E5E7EB;
 }
 
 .glass-strong {
@@ -125,9 +171,13 @@
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 1.5rem;
 }
+:root .glass-strong {
+  background: #FFFFFF;
+  border: 1px solid #D1D5DB;
+}
 
 /* ── Noise Texture ──────────────────────────────────── */
-.noise::before {
+.dark .noise::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -154,7 +204,7 @@
 .glow-active {
   position: relative;
 }
-.glow-active::before {
+.dark .glow-active::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -163,7 +213,16 @@
   opacity: 1;
   z-index: -1;
 }
-.glow-active::after {
+:root .glow-active::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(99,102,241,0.08);
+  opacity: 1;
+  z-index: -1;
+}
+.dark .glow-active::after {
   content: "";
   position: absolute;
   left: 0;
@@ -175,6 +234,17 @@
   background: linear-gradient(180deg, #6366F1, #8B5CF6);
   box-shadow: 0 0 8px rgba(99,102,241,0.5);
 }
+:root .glow-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, #6366F1, #8B5CF6);
+}
 
 /* ── Scrollbar ──────────────────────────────────────── */
 ::-webkit-scrollbar {
@@ -185,15 +255,21 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.1);
+  background: rgba(128,128,128,0.2);
   border-radius: 3px;
 }
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+}
 ::-webkit-scrollbar-thumb:hover {
+  background: rgba(128,128,128,0.4);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255,255,255,0.2);
 }
 
 /* ── Focus Ring ─────────────────────────────────────── */
 *:focus-visible {
-  outline: 2px solid rgba(129,140,248,0.5);
+  outline: 2px solid rgba(99,102,241,0.5);
   outline-offset: 2px;
 }

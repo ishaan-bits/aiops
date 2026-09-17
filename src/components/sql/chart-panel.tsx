@@ -68,7 +68,7 @@ export function ChartPanel({ columns, rows }: ChartPanelProps) {
 
   return (
     <div className="glass rounded-3xl overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-white/[0.08] px-5 py-3">
+      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-border px-5 py-3">
         <BarChart3 className="h-4 w-4 text-violet-400" />
         <span className="text-sm font-medium text-foreground">
           {chartData.numeric} by {chartData.categorical}
@@ -78,11 +78,11 @@ export function ChartPanel({ columns, rows }: ChartPanelProps) {
         <div className="space-y-3">
           {chartData.data.map((d, i) => (
             <div key={d.label} className="flex items-center gap-3">
-              <div className="w-36 shrink-0 truncate text-sm text-white/40" title={d.label}>
+              <div className="w-36 shrink-0 truncate text-sm dark:text-white/40 text-muted-foreground" title={d.label}>
                 {d.label}
               </div>
               <div className="flex-1">
-                <div className="relative h-7 rounded-md bg-white/[0.04]">
+                <div className="relative h-7 rounded-md dark:bg-white/[0.04] bg-muted/50">
                   <div
                     className={`absolute inset-y-0 left-0 rounded-md bg-gradient-to-r ${GRADIENT_COLORS[i % GRADIENT_COLORS.length]} transition-all duration-500`}
                     style={{

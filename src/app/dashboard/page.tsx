@@ -193,22 +193,22 @@ export default function DashboardPage() {
           >
             <div className="flex items-start justify-between">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-white/50">
+                <p className="text-sm font-medium dark:text-white/50 text-muted-foreground">
                   {kpi.title}
                 </p>
                 <p className="text-3xl font-bold tracking-tight text-foreground">
                   {kpi.value}
                 </p>
               </div>
-              <div className="rounded-xl bg-white/[0.04] p-2.5 transition-colors group-hover:bg-white/[0.08]">
-                <kpi.icon className="h-5 w-5 text-white/50" />
+              <div className="rounded-xl dark:bg-white/[0.04] bg-muted/50 p-2.5 transition-colors group-hover:bg-white/[0.08]">
+                <kpi.icon className="h-5 w-5 dark:text-white/50 text-muted-foreground" />
               </div>
             </div>
             <div className="mt-4 flex items-center gap-1.5">
               <span className="text-sm font-medium text-emerald-400">
                 {kpi.change}
               </span>
-              <span className="text-sm text-white/50">
+              <span className="text-sm dark:text-white/50 text-muted-foreground">
                 from last month
               </span>
             </div>
@@ -230,15 +230,15 @@ export default function DashboardPage() {
           }}
           className="lg:col-span-2 glass rounded-3xl"
         >
-          <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-4">
+          <div className="flex items-center justify-between border-b dark:border-white/[0.08] border-border px-6 py-4">
             <h2 className="text-lg font-semibold text-foreground">
               Recent Activity
             </h2>
-            <button className="text-sm font-medium text-white/50 hover:text-foreground transition-colors">
+            <button className="text-sm font-medium dark:text-white/50 text-muted-foreground hover:text-foreground transition-colors">
               View all
             </button>
           </div>
-          <div className="divide-y divide-white/[0.08]">
+          <div className="divide-y dark:divide-white/[0.08] divide-border">
             {activities.map((activity, i) => (
               <motion.div
                 key={i}
@@ -250,7 +250,7 @@ export default function DashboardPage() {
                   stiffness: 300,
                   damping: 24,
                 }}
-                className="flex items-start gap-4 px-6 py-4 transition-colors hover:bg-white/[0.03]"
+                className="flex items-start gap-4 px-6 py-4 transition-colors dark:hover:bg-white/[0.03] hover:bg-muted/30"
               >
                 <div className={`mt-0.5 rounded-lg p-2 ${activity.bgColor}`}>
                   <activity.icon className={`h-4 w-4 ${activity.color}`} />
@@ -259,11 +259,11 @@ export default function DashboardPage() {
                   <p className="text-sm font-medium text-foreground">
                     {activity.title}
                   </p>
-                  <p className="text-sm text-white/50 mt-0.5">
+                  <p className="text-sm dark:text-white/50 text-muted-foreground mt-0.5">
                     {activity.description}
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-white/50 whitespace-nowrap mt-0.5">
+                <div className="flex items-center gap-1.5 text-xs dark:text-white/50 text-muted-foreground whitespace-nowrap mt-0.5">
                   <Clock className="h-3 w-3" />
                   {activity.time}
                 </div>
@@ -284,7 +284,7 @@ export default function DashboardPage() {
           }}
           className="glass rounded-3xl"
         >
-          <div className="border-b border-white/[0.08] px-6 py-4">
+          <div className="border-b dark:border-white/[0.08] border-border px-6 py-4">
             <h2 className="text-lg font-semibold text-foreground">
               Quick Actions
             </h2>
@@ -316,9 +316,9 @@ export default function DashboardPage() {
                       ? "Uploading..."
                       : action.title}
                   </p>
-                  <p className="text-sm text-white/80">{action.description}</p>
+                  <p className="text-sm dark:text-white/80 text-white/80">{action.description}</p>
                 </div>
-                <ArrowUpRight className="h-4 w-4 text-white/60" />
+                <ArrowUpRight className="h-4 w-4 dark:text-white/60 text-white/60" />
               </motion.button>
             ))}
           </div>
@@ -337,7 +337,7 @@ export default function DashboardPage() {
         }}
         className="glass rounded-3xl overflow-hidden"
       >
-        <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-4">
+        <div className="flex items-center justify-between border-b dark:border-white/[0.08] border-border px-6 py-4">
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-violet-500/15 p-2">
               <Bot className="h-5 w-5 text-violet-400" />
@@ -346,7 +346,7 @@ export default function DashboardPage() {
               <h2 className="text-lg font-semibold text-foreground">
                 AI Assistant
               </h2>
-              <p className="text-sm text-white/50">
+              <p className="text-sm dark:text-white/50 text-muted-foreground">
                 Powered by AIOps Intelligence
               </p>
             </div>
@@ -361,10 +361,10 @@ export default function DashboardPage() {
           {/* User Message */}
           <div className="flex gap-3">
             <div className="rounded-full bg-gradient-to-br from-violet-500/20 to-indigo-500/20 p-2 h-fit">
-              <User className="h-4 w-4 text-white/60" />
+              <User className="h-4 w-4 dark:text-white/60 text-white/60" />
             </div>
-            <div className="rounded-2xl rounded-tl-md bg-white/[0.06] px-5 py-3 max-w-2xl">
-              <p className="text-sm font-medium text-white/50 mb-1">You</p>
+            <div className="rounded-2xl rounded-tl-md dark:bg-white/[0.06] bg-muted px-5 py-3 max-w-2xl">
+              <p className="text-sm font-medium dark:text-white/50 text-muted-foreground mb-1">You</p>
               <p className="text-sm text-foreground leading-relaxed">
                 &quot;Summarize all vendor contracts expiring this month.&quot;
               </p>

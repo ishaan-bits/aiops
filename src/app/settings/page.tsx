@@ -9,7 +9,7 @@ export default function SettingsPage() {
           </svg>
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground mb-2">Settings</h1>
-        <p className="text-sm text-white/40 mb-6">
+        <p className="text-sm dark:text-white/40 text-muted-foreground mb-6">
           Manage your account preferences and integrations
         </p>
         <div className="rounded-xl bg-gradient-to-r from-violet-500/10 via-indigo-500/10 to-violet-500/10 border border-violet-500/20 px-5 py-4">

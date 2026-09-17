@@ -35,7 +35,7 @@ export function SidebarContent() {
         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500">
           <Sparkles className="h-4 w-4 text-white" />
         </div>
-        <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-indigo-400 to-violet-400 dark:from-indigo-400 dark:to-violet-400 from-indigo-600 to-violet-600 bg-clip-text text-transparent">
           AIOps
         </span>
       </div>
@@ -52,8 +52,8 @@ export function SidebarContent() {
                   className={cn(
                     "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
                     isActive
-                      ? "glow-active text-white"
-                      : "text-white/50 hover:text-white/80 hover:bg-white/[0.04]"
+                      ? "glow-active text-white dark:text-white text-foreground"
+                      : "text-white/50 dark:text-white/50 text-muted-foreground hover:text-white/80 dark:hover:text-white/80 hover:text-foreground hover:bg-white/[0.04] dark:hover:bg-white/[0.04] hover:bg-accent"
                   )}
                 >
                   <motion.div
@@ -71,11 +71,11 @@ export function SidebarContent() {
         })}
       </nav>
 
-      <div className="mx-3 mb-3 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
-        <p className="text-[10px] uppercase tracking-widest text-white/30 mb-1">
+      <div className="mx-3 mb-3 rounded-xl border border-white/[0.06] dark:border-white/[0.06] border-border bg-white/[0.03] dark:bg-white/[0.03] bg-muted/50 p-3">
+        <p className="text-[10px] uppercase tracking-widest text-white/30 dark:text-white/30 text-muted-foreground mb-1">
           Version
         </p>
-        <p className="text-xs font-medium text-white/60">v0.1.0</p>
+        <p className="text-xs font-medium text-white/60 dark:text-white/60 text-muted-foreground">v0.1.0</p>
       </div>
     </>
   );
@@ -83,7 +83,7 @@ export function SidebarContent() {
 
 export function Sidebar() {
   return (
-    <aside className="flex flex-col w-64 h-full border-r border-white/[0.06] bg-white/[0.03] backdrop-blur-xl text-sidebar-foreground">
+    <aside className="flex flex-col w-64 h-full border-r border-white/[0.06] dark:border-white/[0.06] border-border bg-white/[0.03] dark:bg-white/[0.03] bg-sidebar backdrop-blur-xl text-sidebar-foreground">
       <SidebarContent />
     </aside>
   );

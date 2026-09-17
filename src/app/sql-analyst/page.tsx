@@ -118,7 +118,7 @@ export default function SQLAnalystPage() {
         <div className="flex items-center gap-2 mb-3">
           <Database className="h-4 w-4 text-violet-400" />
           <span className="text-sm font-medium text-foreground">vendor_payments</span>
-          <span className="text-xs text-white/40">24 records</span>
+          <span className="text-xs dark:text-white/40 text-muted-foreground">24 records</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {[
@@ -133,10 +133,10 @@ export default function SQLAnalystPage() {
           ].map((col) => (
             <div
               key={col.name}
-              className="flex items-center gap-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] px-2.5 py-1 text-xs"
+              className="flex items-center gap-1.5 rounded-lg dark:bg-white/[0.04] bg-muted/50 dark:border-white/[0.06] border-border px-2.5 py-1 text-xs"
             >
-              <span className="font-medium text-white/80">{col.name}</span>
-              <span className="text-white/30">{col.type}</span>
+              <span className="font-medium dark:text-white/80 text-foreground">{col.name}</span>
+              <span className="dark:text-white/30 text-muted-foreground">{col.type}</span>
             </div>
           ))}
         </div>
@@ -190,7 +190,7 @@ export default function SQLAnalystPage() {
             {query.results && (
               <button
                 onClick={handleExportCSV}
-                className="glass-subtle inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-white/80 transition-all hover:text-white"
+                className="glass-subtle inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium dark:text-white/80 text-foreground transition-all hover:text-white"
               >
                 <Download className="h-4 w-4" />
                 Export CSV
@@ -222,7 +222,7 @@ export default function SQLAnalystPage() {
           ) : (
             <div className="glass rounded-3xl p-10 text-center">
               <Sparkles className="mx-auto h-8 w-8 text-white/20" />
-              <p className="mt-3 text-sm text-white/40">No results found for this query.</p>
+              <p className="mt-3 text-sm dark:text-white/40 text-muted-foreground">No results found for this query.</p>
             </div>
           )}
         </motion.div>

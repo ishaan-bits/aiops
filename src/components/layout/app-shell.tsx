@@ -11,7 +11,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 shrink-0 border-r border-white/[0.06] bg-white/[0.03] backdrop-blur-xl text-sidebar-foreground">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 shrink-0 border-r border-white/[0.06] dark:border-white/[0.06] border-border bg-white/[0.03] dark:bg-white/[0.03] bg-sidebar backdrop-blur-xl text-sidebar-foreground">
         <SidebarContent />
       </aside>
 
@@ -19,7 +19,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent
           side="left"
-          className="w-64 p-0 border-0 bg-white/[0.06] backdrop-blur-2xl text-sidebar-foreground"
+          className="w-64 p-0 border-0 bg-white/[0.06] dark:bg-white/[0.06] bg-background backdrop-blur-2xl text-sidebar-foreground"
         >
           <SidebarContent />
         </SheetContent>

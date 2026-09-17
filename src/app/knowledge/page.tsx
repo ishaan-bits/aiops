@@ -178,7 +178,7 @@ export default function KnowledgePage() {
           className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium shadow-sm transition-all ${
             showAskAI
               ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500"
-              : "glass text-foreground hover:bg-white/[0.08]"
+               : "glass text-foreground dark:hover:bg-white/[0.08] hover:bg-muted/30"
           }`}
         >
           <Sparkles className="h-4 w-4" />
@@ -205,11 +205,11 @@ export default function KnowledgePage() {
               className={`glass-subtle rounded-3xl border-2 border-dashed p-10 text-center transition-all ${
                 isDragOver
                   ? "border-violet-500/40 bg-violet-500/10"
-                  : "border-white/[0.12] hover:border-white/[0.2]"
+                   : "dark:border-white/[0.12] border-border dark:hover:border-white/[0.2]"
               }`}
             >
               <div className="flex flex-col items-center gap-4">
-                <div className="rounded-2xl bg-white/[0.04] p-4">
+                <div className="rounded-2xl dark:bg-white/[0.04] bg-muted/50 p-4">
                   <Upload className="h-8 w-8 text-muted-foreground" />
                 </div>
                 <div>
@@ -265,7 +265,7 @@ export default function KnowledgePage() {
                   className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                     activeFilter === filter
                       ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white"
-                      : "glass-subtle text-muted-foreground hover:bg-white/[0.06]"
+                       : "glass-subtle text-muted-foreground dark:hover:bg-white/[0.06] hover:bg-muted"
                   }`}
                 >
                   {filter}
@@ -277,7 +277,7 @@ export default function KnowledgePage() {
               <input
                 type="search"
                 placeholder="Search documents..."
-                className="h-9 w-full sm:w-64 rounded-lg border border-white/[0.08] bg-white/[0.04] pl-8 pr-3 text-sm text-foreground outline-none focus:ring-1 focus:ring-violet-500/40 placeholder:text-muted-foreground"
+                className="h-9 w-full sm:w-64 rounded-lg border dark:border-white/[0.08] border-border dark:bg-white/[0.04] bg-muted/50 pl-8 pr-3 text-sm text-foreground outline-none focus:ring-1 focus:ring-violet-500/40 placeholder:text-muted-foreground"
               />
             </div>
           </motion.div>
@@ -297,7 +297,7 @@ export default function KnowledgePage() {
                   <div className="rounded-xl bg-red-500/10 p-3">
                     <FileText className="h-6 w-6 text-red-400" />
                   </div>
-                  <button className="rounded-lg p-1.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/[0.06]">
+                  <button className="rounded-lg p-1.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity dark:hover:bg-white/[0.06] hover:bg-muted">
                     <MoreVertical className="h-4 w-4" />
                   </button>
                 </div>
@@ -326,7 +326,7 @@ export default function KnowledgePage() {
             transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.5 }}
             className="glass rounded-3xl shadow-sm overflow-hidden"
           >
-            <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-4">
+            <div className="flex items-center justify-between border-b dark:border-white/[0.08] border-border px-6 py-4">
               <h2 className="text-lg font-semibold text-foreground">
                 Recently Uploaded
               </h2>
@@ -337,27 +337,27 @@ export default function KnowledgePage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/[0.08]">
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    <tr className="border-b dark:border-white/[0.08] border-border">
+                    <th className="px-6 py-3 text-left text-xs font-medium dark:text-white/60 text-muted-foreground uppercase tracking-wider">
                       File
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium dark:text-white/60 text-muted-foreground uppercase tracking-wider">
                       Size
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium dark:text-white/60 text-muted-foreground uppercase tracking-wider">
                       Uploaded By
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium dark:text-white/60 text-muted-foreground uppercase tracking-wider">
                       Time
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium dark:text-white/60 text-muted-foreground uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/[0.06]">
+                <tbody className="divide-y dark:divide-white/[0.06] divide-border">
                   {recentlyUploaded.map((row) => (
-                    <tr key={row.name} className="transition-colors hover:bg-white/[0.03]">
+                    <tr key={row.name} className="transition-colors dark:hover:bg-white/[0.03] hover:bg-muted/30">
                       <td className="px-6 py-3.5">
                         <div className="flex items-center gap-3">
                           <div className="rounded-lg bg-red-500/10 p-2">
@@ -404,7 +404,7 @@ export default function KnowledgePage() {
             ) : (
               <div className="space-y-4">
             <div className="glass rounded-3xl shadow-sm">
-              <div className="border-b border-white/[0.08] px-5 py-4">
+              <div className="border-b dark:border-white/[0.08] border-border px-5 py-4">
                 <h2 className="text-base font-semibold text-foreground">
                   Summary
                 </h2>
@@ -452,7 +452,7 @@ export default function KnowledgePage() {
             {/* Storage Bar */}
             <div className="glass rounded-3xl p-5 shadow-sm">
               <p className="text-sm font-medium text-foreground mb-3">Storage</p>
-              <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden">
+              <div className="h-2 rounded-full dark:bg-white/[0.06] bg-muted overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min((storageUsed / 2) * 100, 100)}%` }}
