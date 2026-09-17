@@ -58,3 +58,14 @@ class ReportResponse(BaseModel):
 
 class ReportGenerateRequest(BaseModel):
     template: str
+
+
+class AIReportRequest(BaseModel):
+    prompt: str
+
+
+class AIReportResponse(BaseModel):
+    detected_template: str
+    report: ReportResponse
+    ai_summary: str
+    confidence: float

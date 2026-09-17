@@ -72,3 +72,23 @@ export async function generateReport(templateId: string): Promise<ReportResponse
   }
   return res.json();
 }
+
+export interface AIReportResponse {
+  detected_template: string;
+  report: ReportResponse;
+  ai_summary: string;
+  confidence: number;
+}
+
+export async function generateAIReport(prompt: string): Promise<AIReportResponse> {
+  const res = await fetch(`${API_BASE_URL}/reports/ai`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Failed to generate AI report" }));
+    throw new Error(err.detail || "Failed to generate AI report");
+  }
+  return res.json();
+}

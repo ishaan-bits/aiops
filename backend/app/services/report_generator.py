@@ -374,3 +374,118 @@ def generate_report(template_id: str) -> dict:
         "charts": charts,
         "tables": tables,
     }
+
+
+# ── AI Report Generation ─────────────────────────────────────────
+
+def classify_report_intent(prompt: str) -> dict:
+    """Use Ollama phi3:mini to classify the user's intent into a template and extract filters."""
+    classification_prompt = f"""You are an enterprise AI classifier. Given a user prompt, determine which report template best matches their request and extract any optional filters.
+
+Available templates:
+- executive: "Executive Operations Report" — High-level overview of organizational spending, vendor performance, and operational health. Use for general/overall/business reports.
+- vendor: "Vendor Spending Analysis" — Detailed breakdown of spending by vendor, category, and department. Use when asking about specific vendors, vendor comparisons, or vendor spending.
+- payable: "Accounts Payable Summary" — Outstanding liabilities, payment aging, and cash flow. Use for overdue, payment, aging, or accounts payable questions.
+- risk: "Financial Risk Report" — Risk assessment based on overdue payments, vendor concentration, and exposure. Use for risk, threat, exposure, or security questions.
+
+Optional filters to extract (use null if not mentioned):
+- department: e.g. "Engineering", "Marketing"
+- vendor: e.g. "Acme Corp"
+- overdue: true if asking about overdue/late/overdue items
+- month: e.g. "2024-01" if a specific month is mentioned
+- top_n: integer if user asks for "top 5", "top 3", "bottom 10", etc.
+
+User prompt: "{prompt}"
+
+Respond with ONLY a JSON object (no markdown, no explanation):
+{{"template": "<executive|vendor|payable|risk>", "confidence": <0.0-1.0>, "filters": {{"department": null, "vendor": null, "overdue": null, "month": null, "top_n": null}}}}"""
+
+    try:
+        import ollama
+        response = ollama.chat(
+            model="phi3:mini",
+            messages=[
+                {"role": "system", "content": "You are a precise JSON classifier. Return only valid JSON."},
+                {"role": "user", "content": classification_prompt},
+            ],
+            options={"temperature": 0.1},
+        )
+        raw = response["message"]["content"].strip()
+        # Strip markdown code fences if present
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[-1]
+            if raw.endswith("```"):
+                raw = raw[:-3]
+            raw = raw.strip()
+        import json as _json
+        result = _json.loads(raw)
+        # Validate template
+        valid_templates = {"executive", "vendor", "payable", "risk"}
+        if result.get("template") not in valid_templates:
+            result["template"] = "executive"
+            result["confidence"] = 0.5
+        return result
+    except Exception:
+        # Fallback: keyword-based classification
+        return _classify_by_keywords(prompt)
+
+
+def _classify_by_keywords(prompt: str) -> dict:
+    """Simple keyword-based fallback classifier."""
+    p = prompt.lower()
+    filters = {"department": None, "vendor": None, "overdue": None, "month": None, "top_n": None}
+    confidence = 0.6
+
+    if any(w in p for w in ["overdue", "late", "past due", "unpaid"]):
+        return {"template": "payable", "confidence": 0.7, "filters": {**filters, "overdue": True}}
+    if any(w in p for w in ["risk", "threat", "exposure", "danger"]):
+        return {"template": "risk", "confidence": 0.7, "filters": filters}
+    if any(w in p for w in ["vendor", "supplier", "acme", "spending by"]):
+        return {"template": "vendor", "confidence": 0.7, "filters": filters}
+    # Check for "top N" patterns
+    import re
+    top_match = re.search(r"top\s+(\d+)", p)
+    if top_match:
+        filters["top_n"] = int(top_match.group(1))
+        confidence = 0.75
+    return {"template": "executive", "confidence": confidence, "filters": filters}
+
+
+def generate_ai_report(prompt: str) -> dict:
+    """Generate a report using AI intent classification, then delegate to existing generator."""
+    classification = classify_report_intent(prompt)
+    template_id = classification["template"]
+    confidence = classification["confidence"]
+
+    # Generate the report using existing logic (no duplication)
+    report = generate_report(template_id)
+
+    # Build a contextual AI summary from the classification prompt
+    classification_prompt = f"""You are an enterprise AI analyst. A user asked: "{prompt}"
+The system classified this as a "{template_id}" report.
+
+Here are the key metrics:
+""" + "\n".join(f"- {k['label']}: {k['value']}" for k in report["kpis"]) + f"""
+
+Based on the user's question and these metrics, write a brief 2-3 sentence executive response that directly addresses what the user asked. Be specific with numbers. Be professional and concise."""
+
+    try:
+        import ollama
+        response = ollama.chat(
+            model="phi3:mini",
+            messages=[
+                {"role": "system", "content": "You are an enterprise AI analyst. Write concise, data-driven executive responses."},
+                {"role": "user", "content": classification_prompt},
+            ],
+            options={"temperature": 0.3},
+        )
+        ai_summary = response["message"]["content"]
+    except Exception:
+        ai_summary = report["summary"][:300] + "..."
+
+    return {
+        "detected_template": template_id,
+        "report": report,
+        "ai_summary": ai_summary,
+        "confidence": confidence,
+    }
