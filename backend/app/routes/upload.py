@@ -4,6 +4,7 @@ import shutil
 from fastapi import APIRouter, UploadFile
 
 from ..schemas.upload import UploadResponse
+from ..services.rag import register_document
 
 router = APIRouter()
 
@@ -18,9 +19,11 @@ async def upload_file(file: UploadFile):
         shutil.copyfileobj(file.file, buffer)
 
     file_size = os.path.getsize(file_path)
+    document_id = register_document(file.filename, file_path)
 
     return UploadResponse(
         filename=file.filename,
         size=file_size,
         status="uploaded",
+        document_id=document_id,
     )

@@ -14,8 +14,11 @@ import {
   Files,
   AlertCircle,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { uploadDocument } from "@/services/api";
+import { indexDocument } from "@/services/rag";
+import { AskAI } from "@/components/knowledge/ask-ai";
 
 interface Document {
   name: string;
@@ -76,6 +79,7 @@ export default function KnowledgePage() {
   const [totalDocs, setTotalDocs] = useState(248);
   const [indexedDocs, setIndexedDocs] = useState(241);
   const [storageUsed, setStorageUsed] = useState(1.2);
+  const [showAskAI, setShowAskAI] = useState(false);
 
   const filteredDocuments = documents.filter((doc) => {
     if (activeFilter === "All") return true;
@@ -116,6 +120,16 @@ export default function KnowledgePage() {
       setStorageUsed((prev) => prev + result.size / (1024 * 1024 * 1024));
 
       toast.success(`${result.filename} uploaded successfully`);
+
+      if (result.document_id) {
+        toast.info("Indexing document for AI search...");
+        try {
+          await indexDocument(result.document_id);
+          toast.success(`${result.filename} indexed for AI search`);
+        } catch {
+          toast.warning("Upload succeeded but indexing failed. You can retry later.");
+        }
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -159,6 +173,17 @@ export default function KnowledgePage() {
             Upload and manage company documents
           </p>
         </div>
+        <button
+          onClick={() => setShowAskAI(!showAskAI)}
+          className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium shadow-sm transition-all ${
+            showAskAI
+              ? "bg-violet-600 text-white hover:bg-violet-700"
+              : "bg-white border border-border text-foreground hover:bg-muted"
+          }`}
+        >
+          <Sparkles className="h-4 w-4" />
+          {showAskAI ? "Close AI" : "Ask AI"}
+        </button>
       </div>
 
       <div className="flex flex-col xl:flex-row gap-6">
@@ -366,14 +391,18 @@ export default function KnowledgePage() {
           </motion.div>
         </div>
 
-        {/* Right Summary Panel */}
+        {/* Right Panel */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="xl:w-72 shrink-0"
+          className="xl:w-80 shrink-0"
         >
-          <div className="xl:sticky xl:top-6 space-y-4">
+          <div className="xl:sticky xl:top-6">
+            {showAskAI ? (
+              <AskAI />
+            ) : (
+              <div className="space-y-4">
             <div className="rounded-2xl border border-border bg-white shadow-sm">
               <div className="border-b border-border px-5 py-4">
                 <h2 className="text-base font-semibold text-foreground">
@@ -468,6 +497,8 @@ export default function KnowledgePage() {
                 </div>
               </div>
             </div>
+          </div>
+            )}
           </div>
         </motion.div>
       </div>

@@ -25,6 +25,8 @@ backend/.venv/
 __pycache__/
 *.pyc
 *.db
+backend/app/faiss_indexes/
+/tmp/
 
 # uploads
 backend/app/uploads/*
