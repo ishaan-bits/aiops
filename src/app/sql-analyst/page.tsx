@@ -100,7 +100,7 @@ export default function SQLAnalystPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-400">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               SQLite Connected
             </span>
@@ -113,12 +113,12 @@ export default function SQLAnalystPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="rounded-2xl border border-border bg-white p-5 shadow-sm"
+        className="glass rounded-3xl p-5"
       >
         <div className="flex items-center gap-2 mb-3">
-          <Database className="h-4 w-4 text-violet-500" />
+          <Database className="h-4 w-4 text-violet-400" />
           <span className="text-sm font-medium text-foreground">vendor_payments</span>
-          <span className="text-xs text-muted-foreground">24 records</span>
+          <span className="text-xs text-white/40">24 records</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {[
@@ -133,10 +133,10 @@ export default function SQLAnalystPage() {
           ].map((col) => (
             <div
               key={col.name}
-              className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2.5 py-1 text-xs"
+              className="flex items-center gap-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] px-2.5 py-1 text-xs"
             >
-              <span className="font-medium text-foreground">{col.name}</span>
-              <span className="text-muted-foreground">{col.type}</span>
+              <span className="font-medium text-white/80">{col.name}</span>
+              <span className="text-white/30">{col.type}</span>
             </div>
           ))}
         </div>
@@ -178,7 +178,7 @@ export default function SQLAnalystPage() {
             <button
               onClick={handleExecute}
               disabled={executing}
-              className="inline-flex items-center gap-2 rounded-xl bg-violet-500 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-violet-600 hover:shadow-md disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:shadow-md hover:shadow-violet-500/25 disabled:opacity-50"
             >
               {executing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -190,7 +190,7 @@ export default function SQLAnalystPage() {
             {query.results && (
               <button
                 onClick={handleExportCSV}
-                className="inline-flex items-center gap-2 rounded-xl border border-border bg-white px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all hover:shadow-md"
+                className="glass-subtle inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-white/80 transition-all hover:text-white"
               >
                 <Download className="h-4 w-4" />
                 Export CSV
@@ -220,9 +220,9 @@ export default function SQLAnalystPage() {
               />
             </>
           ) : (
-            <div className="rounded-2xl border border-border bg-white p-10 text-center shadow-sm">
-              <Sparkles className="mx-auto h-8 w-8 text-muted-foreground/50" />
-              <p className="mt-3 text-sm text-muted-foreground">No results found for this query.</p>
+            <div className="glass rounded-3xl p-10 text-center">
+              <Sparkles className="mx-auto h-8 w-8 text-white/20" />
+              <p className="mt-3 text-sm text-white/40">No results found for this query.</p>
             </div>
           )}
         </motion.div>

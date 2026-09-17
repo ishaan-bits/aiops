@@ -29,6 +29,19 @@ function detectCategoricalNumeric(
   return null;
 }
 
+const GRADIENT_COLORS = [
+  "from-violet-500 to-indigo-500",
+  "from-blue-500 to-cyan-500",
+  "from-emerald-500 to-teal-500",
+  "from-amber-500 to-orange-500",
+  "from-rose-500 to-pink-500",
+  "from-cyan-500 to-blue-500",
+  "from-indigo-500 to-purple-500",
+  "from-pink-500 to-rose-500",
+  "from-teal-500 to-emerald-500",
+  "from-orange-500 to-amber-500",
+];
+
 export function ChartPanel({ columns, rows }: ChartPanelProps) {
   const chartData = useMemo(() => {
     const detection = detectCategoricalNumeric(columns, rows);
@@ -53,23 +66,10 @@ export function ChartPanel({ columns, rows }: ChartPanelProps) {
 
   if (!chartData) return null;
 
-  const COLORS = [
-    "bg-violet-500",
-    "bg-blue-500",
-    "bg-emerald-500",
-    "bg-amber-500",
-    "bg-rose-500",
-    "bg-cyan-500",
-    "bg-indigo-500",
-    "bg-pink-500",
-    "bg-teal-500",
-    "bg-orange-500",
-  ];
-
   return (
-    <div className="rounded-2xl border border-border bg-white shadow-sm overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-border px-5 py-3">
-        <BarChart3 className="h-4 w-4 text-violet-500" />
+    <div className="glass rounded-3xl overflow-hidden">
+      <div className="flex items-center gap-2 border-b border-white/[0.08] px-5 py-3">
+        <BarChart3 className="h-4 w-4 text-violet-400" />
         <span className="text-sm font-medium text-foreground">
           {chartData.numeric} by {chartData.categorical}
         </span>
@@ -78,13 +78,13 @@ export function ChartPanel({ columns, rows }: ChartPanelProps) {
         <div className="space-y-3">
           {chartData.data.map((d, i) => (
             <div key={d.label} className="flex items-center gap-3">
-              <div className="w-36 shrink-0 truncate text-sm text-muted-foreground" title={d.label}>
+              <div className="w-36 shrink-0 truncate text-sm text-white/40" title={d.label}>
                 {d.label}
               </div>
               <div className="flex-1">
-                <div className="relative h-7 rounded-md bg-muted/40">
+                <div className="relative h-7 rounded-md bg-white/[0.04]">
                   <div
-                    className={`absolute inset-y-0 left-0 rounded-md ${COLORS[i % COLORS.length]} transition-all duration-500`}
+                    className={`absolute inset-y-0 left-0 rounded-md bg-gradient-to-r ${GRADIENT_COLORS[i % GRADIENT_COLORS.length]} transition-all duration-500`}
                     style={{
                       width: `${Math.max((d.value / chartData.maxVal) * 100, 2)}%`,
                     }}

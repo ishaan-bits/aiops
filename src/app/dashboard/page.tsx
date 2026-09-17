@@ -54,48 +54,48 @@ const activities = [
     title: "Contract.pdf uploaded",
     description: "Vendor agreement added to knowledge base",
     time: "2 minutes ago",
-    color: "text-blue-500",
-    bgColor: "bg-blue-50",
+    color: "text-blue-400",
+    bgColor: "bg-blue-500/10",
   },
   {
     icon: FileBarChart,
     title: "Vendor report generated",
     description: "Q4 spending analysis completed",
     time: "18 minutes ago",
-    color: "text-emerald-500",
-    bgColor: "bg-emerald-50",
+    color: "text-emerald-400",
+    bgColor: "bg-emerald-500/10",
   },
   {
     icon: Database,
     title: "Knowledge synced",
     description: "142 documents re-indexed",
     time: "1 hour ago",
-    color: "text-violet-500",
-    bgColor: "bg-violet-50",
+    color: "text-violet-400",
+    bgColor: "bg-violet-500/10",
   },
   {
     icon: FileText,
     title: "Invoice analyzed",
     description: "INV-2024-0847 processed and categorized",
     time: "2 hours ago",
-    color: "text-amber-500",
-    bgColor: "bg-amber-50",
+    color: "text-amber-400",
+    bgColor: "bg-amber-500/10",
   },
   {
     icon: Play,
     title: "SQL query executed",
     description: "Vendor payment reconciliation query run",
     time: "3 hours ago",
-    color: "text-rose-500",
-    bgColor: "bg-rose-50",
+    color: "text-rose-400",
+    bgColor: "bg-rose-500/10",
   },
   {
     icon: FileBarChart,
     title: "Weekly report exported",
     description: "Ops summary for week 48 delivered",
     time: "5 hours ago",
-    color: "text-cyan-500",
-    bgColor: "bg-cyan-50",
+    color: "text-cyan-400",
+    bgColor: "bg-cyan-500/10",
   },
 ];
 
@@ -182,28 +182,33 @@ export default function DashboardPage() {
             key={kpi.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1, duration: 0.4, ease: "easeOut" }}
-            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="group relative rounded-2xl border border-border bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+            transition={{
+              delay: i * 0.1,
+              type: "spring",
+              stiffness: 300,
+              damping: 24,
+            }}
+            whileHover={{ y: -4, scale: 1.01, transition: { type: "spring", stiffness: 300, damping: 24 } }}
+            className="group relative glass noise rounded-3xl p-6 transition-shadow hover:shadow-md"
           >
             <div className="flex items-start justify-between">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">
+                <p className="text-sm font-medium text-white/50">
                   {kpi.title}
                 </p>
                 <p className="text-3xl font-bold tracking-tight text-foreground">
                   {kpi.value}
                 </p>
               </div>
-              <div className="rounded-xl bg-muted p-2.5 transition-colors group-hover:bg-muted/80">
-                <kpi.icon className="h-5 w-5 text-muted-foreground" />
+              <div className="rounded-xl bg-white/[0.04] p-2.5 transition-colors group-hover:bg-white/[0.08]">
+                <kpi.icon className="h-5 w-5 text-white/50" />
               </div>
             </div>
             <div className="mt-4 flex items-center gap-1.5">
-              <span className="text-sm font-medium text-emerald-600">
+              <span className="text-sm font-medium text-emerald-400">
                 {kpi.change}
               </span>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-white/50">
                 from last month
               </span>
             </div>
@@ -217,25 +222,35 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.4 }}
-          className="lg:col-span-2 rounded-2xl border border-border bg-white shadow-sm"
+          transition={{
+            delay: 0.4,
+            type: "spring",
+            stiffness: 300,
+            damping: 24,
+          }}
+          className="lg:col-span-2 glass rounded-3xl"
         >
-          <div className="flex items-center justify-between border-b border-border px-6 py-4">
+          <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-4">
             <h2 className="text-lg font-semibold text-foreground">
               Recent Activity
             </h2>
-            <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <button className="text-sm font-medium text-white/50 hover:text-foreground transition-colors">
               View all
             </button>
           </div>
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-white/[0.08]">
             {activities.map((activity, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + i * 0.05, duration: 0.3 }}
-                className="flex items-start gap-4 px-6 py-4 transition-colors hover:bg-muted/30"
+                transition={{
+                  delay: 0.5 + i * 0.05,
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 24,
+                }}
+                className="flex items-start gap-4 px-6 py-4 transition-colors hover:bg-white/[0.03]"
               >
                 <div className={`mt-0.5 rounded-lg p-2 ${activity.bgColor}`}>
                   <activity.icon className={`h-4 w-4 ${activity.color}`} />
@@ -244,11 +259,11 @@ export default function DashboardPage() {
                   <p className="text-sm font-medium text-foreground">
                     {activity.title}
                   </p>
-                  <p className="text-sm text-muted-foreground mt-0.5">
+                  <p className="text-sm text-white/50 mt-0.5">
                     {activity.description}
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground whitespace-nowrap mt-0.5">
+                <div className="flex items-center gap-1.5 text-xs text-white/50 whitespace-nowrap mt-0.5">
                   <Clock className="h-3 w-3" />
                   {activity.time}
                 </div>
@@ -261,10 +276,15 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.4 }}
-          className="rounded-2xl border border-border bg-white shadow-sm"
+          transition={{
+            delay: 0.5,
+            type: "spring",
+            stiffness: 300,
+            damping: 24,
+          }}
+          className="glass rounded-3xl"
         >
-          <div className="border-b border-border px-6 py-4">
+          <div className="border-b border-white/[0.08] px-6 py-4">
             <h2 className="text-lg font-semibold text-foreground">
               Quick Actions
             </h2>
@@ -309,24 +329,29 @@ export default function DashboardPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.4 }}
-        className="rounded-2xl border border-border bg-white shadow-sm overflow-hidden"
+        transition={{
+          delay: 0.6,
+          type: "spring",
+          stiffness: 300,
+          damping: 24,
+        }}
+        className="glass rounded-3xl overflow-hidden"
       >
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
+        <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-violet-100 p-2">
-              <Bot className="h-5 w-5 text-violet-600" />
+            <div className="rounded-xl bg-violet-500/15 p-2">
+              <Bot className="h-5 w-5 text-violet-400" />
             </div>
             <div>
               <h2 className="text-lg font-semibold text-foreground">
                 AI Assistant
               </h2>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white/50">
                 Powered by AIOps Intelligence
               </p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             Online
           </span>
@@ -335,11 +360,11 @@ export default function DashboardPage() {
         <div className="p-6 space-y-6">
           {/* User Message */}
           <div className="flex gap-3">
-            <div className="rounded-full bg-slate-100 p-2 h-fit">
-              <User className="h-4 w-4 text-slate-600" />
+            <div className="rounded-full bg-gradient-to-br from-violet-500/20 to-indigo-500/20 p-2 h-fit">
+              <User className="h-4 w-4 text-white/60" />
             </div>
-            <div className="rounded-2xl rounded-tl-md bg-slate-100 px-5 py-3 max-w-2xl">
-              <p className="text-sm font-medium text-slate-500 mb-1">You</p>
+            <div className="rounded-2xl rounded-tl-md bg-white/[0.06] px-5 py-3 max-w-2xl">
+              <p className="text-sm font-medium text-white/50 mb-1">You</p>
               <p className="text-sm text-foreground leading-relaxed">
                 &quot;Summarize all vendor contracts expiring this month.&quot;
               </p>
@@ -348,11 +373,11 @@ export default function DashboardPage() {
 
           {/* AI Response */}
           <div className="flex gap-3">
-            <div className="rounded-full bg-violet-100 p-2 h-fit">
-              <Bot className="h-4 w-4 text-violet-600" />
+            <div className="rounded-full bg-gradient-to-br from-violet-500/20 to-indigo-500/20 p-2 h-fit">
+              <Bot className="h-4 w-4 text-violet-400" />
             </div>
-            <div className="rounded-2xl rounded-tl-md bg-violet-50 border border-violet-100 px-5 py-3 max-w-2xl">
-              <p className="text-sm font-medium text-violet-600 mb-1">
+            <div className="rounded-2xl rounded-tl-md bg-violet-500/10 border border-violet-500/20 px-5 py-3 max-w-2xl">
+              <p className="text-sm font-medium text-violet-400 mb-1">
                 AIOps
               </p>
               <p className="text-sm text-foreground leading-relaxed">
@@ -370,7 +395,7 @@ export default function DashboardPage() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-white px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition-shadow hover:shadow-md"
+              className="inline-flex items-center gap-2 glass-subtle rounded-xl px-5 py-2.5 text-sm font-medium text-foreground transition-shadow hover:shadow-md"
             >
               <ExternalLink className="h-4 w-4" />
               View Sources

@@ -53,20 +53,20 @@ export function ResultsTable({ columns, rows }: ResultsTableProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-white shadow-sm overflow-hidden">
-      <div className="border-b border-border px-5 py-3">
+    <div className="glass rounded-3xl overflow-hidden">
+      <div className="border-b border-white/[0.08] px-5 py-3">
         <span className="text-sm font-medium text-foreground">Results</span>
-        <span className="ml-2 text-xs text-muted-foreground">({rows.length} rows)</span>
+        <span className="ml-2 text-xs text-white/30">({rows.length} rows)</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-muted/30">
+            <tr className="border-b border-white/[0.08] bg-white/[0.04]">
               {columns.map((col) => (
                 <th
                   key={col}
                   onClick={() => handleSort(col)}
-                  className="cursor-pointer px-4 py-3 text-left font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  className="cursor-pointer px-4 py-3 text-left font-medium text-white/40 transition-colors hover:text-white/70"
                 >
                   <div className="flex items-center gap-1.5">
                     {col}
@@ -88,10 +88,10 @@ export function ResultsTable({ columns, rows }: ResultsTableProps) {
             {pageRows.map((row, i) => (
               <tr
                 key={i}
-                className="border-b border-border transition-colors hover:bg-muted/20 last:border-b-0"
+                className="border-b border-white/[0.06] transition-colors hover:bg-white/[0.03] last:border-b-0"
               >
                 {columns.map((col) => (
-                  <td key={col} className="px-4 py-3 text-foreground">
+                  <td key={col} className="px-4 py-3 text-white/70">
                     {formatValue(row[col])}
                   </td>
                 ))}
@@ -101,22 +101,22 @@ export function ResultsTable({ columns, rows }: ResultsTableProps) {
         </table>
       </div>
       {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-border px-5 py-3">
-          <span className="text-xs text-muted-foreground">
+        <div className="flex items-center justify-between border-t border-white/[0.08] px-5 py-3">
+          <span className="text-xs text-white/30">
             Page {page + 1} of {totalPages}
           </span>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setPage(Math.max(0, page - 1))}
               disabled={page === 0}
-              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"
+              className="rounded-md p-1.5 text-white/30 transition-colors hover:bg-white/[0.06] hover:text-white/70 disabled:opacity-30"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
               disabled={page >= totalPages - 1}
-              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"
+              className="rounded-md p-1.5 text-white/30 transition-colors hover:bg-white/[0.06] hover:text-white/70 disabled:opacity-30"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

@@ -177,8 +177,8 @@ export default function KnowledgePage() {
           onClick={() => setShowAskAI(!showAskAI)}
           className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium shadow-sm transition-all ${
             showAskAI
-              ? "bg-violet-600 text-white hover:bg-violet-700"
-              : "bg-white border border-border text-foreground hover:bg-muted"
+              ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500"
+              : "glass text-foreground hover:bg-white/[0.08]"
           }`}
         >
           <Sparkles className="h-4 w-4" />
@@ -193,7 +193,7 @@ export default function KnowledgePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
           >
             <div
               onDragOver={(e) => {
@@ -202,14 +202,14 @@ export default function KnowledgePage() {
               }}
               onDragLeave={() => setIsDragOver(false)}
               onDrop={handleDrop}
-              className={`rounded-2xl border-2 border-dashed p-10 text-center transition-all ${
+              className={`glass-subtle rounded-3xl border-2 border-dashed p-10 text-center transition-all ${
                 isDragOver
-                  ? "border-violet-400 bg-violet-50"
-                  : "border-border bg-white hover:border-muted-foreground/30"
+                  ? "border-violet-500/40 bg-violet-500/10"
+                  : "border-white/[0.12] hover:border-white/[0.2]"
               }`}
             >
               <div className="flex flex-col items-center gap-4">
-                <div className="rounded-2xl bg-muted p-4">
+                <div className="rounded-2xl bg-white/[0.04] p-4">
                   <Upload className="h-8 w-8 text-muted-foreground" />
                 </div>
                 <div>
@@ -217,7 +217,7 @@ export default function KnowledgePage() {
                     Drag & drop files here, or{" "}
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="text-violet-600 hover:text-violet-700 font-semibold"
+                      className="text-violet-400 hover:text-violet-300 font-semibold"
                     >
                       browse
                     </button>
@@ -232,7 +232,7 @@ export default function KnowledgePage() {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-violet-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:from-violet-500 hover:to-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isUploading ? (
                     <>
@@ -254,7 +254,7 @@ export default function KnowledgePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.4 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.1 }}
             className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
           >
             <div className="flex flex-wrap gap-2">
@@ -264,8 +264,8 @@ export default function KnowledgePage() {
                   onClick={() => setActiveFilter(filter)}
                   className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                     activeFilter === filter
-                      ? "bg-foreground text-background"
-                      : "bg-white border border-border text-muted-foreground hover:bg-muted"
+                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white"
+                      : "glass-subtle text-muted-foreground hover:bg-white/[0.06]"
                   }`}
                 >
                   {filter}
@@ -277,7 +277,7 @@ export default function KnowledgePage() {
               <input
                 type="search"
                 placeholder="Search documents..."
-                className="h-9 w-full sm:w-64 rounded-lg border border-border bg-white pl-8 pr-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+                className="h-9 w-full sm:w-64 rounded-lg border border-white/[0.08] bg-white/[0.04] pl-8 pr-3 text-sm text-foreground outline-none focus:ring-1 focus:ring-violet-500/40 placeholder:text-muted-foreground"
               />
             </div>
           </motion.div>
@@ -289,15 +289,15 @@ export default function KnowledgePage() {
                 key={doc.name}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + i * 0.05, duration: 0.4 }}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="group rounded-2xl border border-border bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.15 + i * 0.05 }}
+                whileHover={{ y: -4, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+                className="group glass rounded-3xl p-5 transition-shadow hover:shadow-lg hover:shadow-violet-500/5"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="rounded-xl bg-red-50 p-3">
-                    <FileText className="h-6 w-6 text-red-500" />
+                  <div className="rounded-xl bg-red-500/10 p-3">
+                    <FileText className="h-6 w-6 text-red-400" />
                   </div>
-                  <button className="rounded-lg p-1.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-muted">
+                  <button className="rounded-lg p-1.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/[0.06]">
                     <MoreVertical className="h-4 w-4" />
                   </button>
                 </div>
@@ -310,7 +310,7 @@ export default function KnowledgePage() {
                   </p>
                 </div>
                 <div className="mt-3">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
                     <CheckCircle2 className="h-3 w-3" />
                     Indexed
                   </span>
@@ -323,10 +323,10 @@ export default function KnowledgePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.4 }}
-            className="rounded-2xl border border-border bg-white shadow-sm overflow-hidden"
+            transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.5 }}
+            className="glass rounded-3xl shadow-sm overflow-hidden"
           >
-            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+            <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-4">
               <h2 className="text-lg font-semibold text-foreground">
                 Recently Uploaded
               </h2>
@@ -337,7 +337,7 @@ export default function KnowledgePage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-border">
+                  <tr className="border-b border-white/[0.08]">
                     <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       File
                     </th>
@@ -355,13 +355,13 @@ export default function KnowledgePage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-white/[0.06]">
                   {recentlyUploaded.map((row) => (
-                    <tr key={row.name} className="transition-colors hover:bg-muted/30">
+                    <tr key={row.name} className="transition-colors hover:bg-white/[0.03]">
                       <td className="px-6 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div className="rounded-lg bg-red-50 p-2">
-                            <FileText className="h-4 w-4 text-red-500" />
+                          <div className="rounded-lg bg-red-500/10 p-2">
+                            <FileText className="h-4 w-4 text-red-400" />
                           </div>
                           <span className="text-sm font-medium text-foreground">
                             {row.name}
@@ -378,7 +378,7 @@ export default function KnowledgePage() {
                         {row.time}
                       </td>
                       <td className="px-6 py-3.5">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
                           <CheckCircle2 className="h-3 w-3" />
                           Indexed
                         </span>
@@ -395,7 +395,7 @@ export default function KnowledgePage() {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3, duration: 0.4 }}
+          transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.3 }}
           className="xl:w-80 shrink-0"
         >
           <div className="xl:sticky xl:top-6">
@@ -403,16 +403,16 @@ export default function KnowledgePage() {
               <AskAI />
             ) : (
               <div className="space-y-4">
-            <div className="rounded-2xl border border-border bg-white shadow-sm">
-              <div className="border-b border-border px-5 py-4">
+            <div className="glass rounded-3xl shadow-sm">
+              <div className="border-b border-white/[0.08] px-5 py-4">
                 <h2 className="text-base font-semibold text-foreground">
                   Summary
                 </h2>
               </div>
               <div className="p-5 space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="rounded-xl bg-blue-50 p-2.5">
-                    <Files className="h-4 w-4 text-blue-600" />
+                  <div className="rounded-xl bg-blue-500/10 p-2.5">
+                    <Files className="h-4 w-4 text-blue-400" />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Total Documents</p>
@@ -420,8 +420,8 @@ export default function KnowledgePage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="rounded-xl bg-emerald-50 p-2.5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                  <div className="rounded-xl bg-emerald-500/10 p-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Indexed</p>
@@ -429,8 +429,8 @@ export default function KnowledgePage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="rounded-xl bg-amber-50 p-2.5">
-                    <Clock className="h-4 w-4 text-amber-600" />
+                  <div className="rounded-xl bg-amber-500/10 p-2.5">
+                    <Clock className="h-4 w-4 text-amber-400" />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Pending</p>
@@ -438,8 +438,8 @@ export default function KnowledgePage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="rounded-xl bg-violet-50 p-2.5">
-                    <HardDrive className="h-4 w-4 text-violet-600" />
+                  <div className="rounded-xl bg-violet-500/10 p-2.5">
+                    <HardDrive className="h-4 w-4 text-violet-400" />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Storage Used</p>
@@ -450,14 +450,14 @@ export default function KnowledgePage() {
             </div>
 
             {/* Storage Bar */}
-            <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
+            <div className="glass rounded-3xl p-5 shadow-sm">
               <p className="text-sm font-medium text-foreground mb-3">Storage</p>
-              <div className="h-2 rounded-full bg-muted overflow-hidden">
+              <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min((storageUsed / 2) * 100, 100)}%` }}
                   transition={{ delay: 0.6, duration: 0.8, ease: "easeOut" }}
-                  className="h-full rounded-full bg-violet-500"
+                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500"
                 />
               </div>
               <p className="text-xs text-muted-foreground mt-2">
@@ -466,13 +466,13 @@ export default function KnowledgePage() {
             </div>
 
             {/* Health Status */}
-            <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
+            <div className="glass rounded-3xl p-5 shadow-sm">
               <p className="text-sm font-medium text-foreground mb-3">
                 Index Health
               </p>
               <div className="flex items-center gap-2">
-                <div className="rounded-lg bg-emerald-50 p-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                <div className="rounded-lg bg-emerald-500/10 p-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">
@@ -484,8 +484,8 @@ export default function KnowledgePage() {
                 </div>
               </div>
               <div className="flex items-center gap-2 mt-3">
-                <div className="rounded-lg bg-amber-50 p-2">
-                  <AlertCircle className="h-4 w-4 text-amber-600" />
+                <div className="rounded-lg bg-amber-500/10 p-2">
+                  <AlertCircle className="h-4 w-4 text-amber-400" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">
