@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routes.upload import router as upload_router
+from .routes.sql import router as sql_router
 from .schemas.upload import HealthResponse
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
@@ -23,6 +24,7 @@ app.add_middleware(
 )
 
 app.include_router(upload_router)
+app.include_router(sql_router)
 
 
 @app.get("/health", response_model=HealthResponse)
