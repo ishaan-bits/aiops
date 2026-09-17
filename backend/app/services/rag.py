@@ -237,32 +237,25 @@ def generate_answer(question: str) -> dict:
             "sources": [],
         }
 
-    context_parts = []
-    for i, s in enumerate(sources):
-        context_parts.append(f"[Source {i+1}: {s['document']}, Page {s['page']}]\n{s['content']}")
+    contexts = [s["content"] for s in sources]
 
-    context = "\n\n".join(context_parts)
-
-    answer_parts = []
-    answer_parts.append(f"Based on the documents in the knowledge base, here is what I found:\n")
-
-    key_findings = []
-    seen_docs = set()
-    for s in sources:
-        doc_ref = f"{s['document']}"
-        if doc_ref not in seen_docs:
-            seen_docs.add(doc_ref)
-            snippet = s["content"][:200].strip()
-            if snippet:
-                key_findings.append(f"- From **{s['document']}** (Page {s['page']}): \"{snippet}...\"")
-
-    if key_findings:
-        answer_parts.append("\n".join(key_findings))
-
-    answer_parts.append(f"\n*{len(sources)} relevant sections found across {len(seen_docs)} document(s).*")
+    try:
+        from .llm import generate_answer as llm_generate
+        answer_text = llm_generate(question, contexts)
+    except ConnectionError as e:
+        raise e
+    except Exception as e:
+        answer_text = (
+            f"Retrieved {len(sources)} relevant sections but could not generate an AI response.\n"
+            f"Error: {str(e)}\n\n"
+            f"Raw context:\n" + "\n\n".join(
+                f"- {s['document']} (Page {s['page']}): {s['content'][:150]}..."
+                for s in sources[:3]
+            )
+        )
 
     return {
-        "answer": "\n".join(answer_parts),
+        "answer": answer_text,
         "sources": [{"document": s["document"], "page": s["page"], "score": s["score"]} for s in sources],
     }
 

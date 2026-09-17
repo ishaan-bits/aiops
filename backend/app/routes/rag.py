@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
 from ..schemas.rag import RAGAskRequest, RAGAskResponse, RAGIndexResponse, RAGSource
-from ..services.rag import generate_answer, index_document, register_document
+from ..services.rag import generate_answer, index_document
 
 router = APIRouter(prefix="/rag", tags=["rag"])
 
@@ -25,8 +25,19 @@ async def ask_question(request: RAGAskRequest):
         raise HTTPException(status_code=400, detail="Question cannot be empty")
     try:
         result = generate_answer(request.question)
+    except ConnectionError:
+        raise HTTPException(
+            status_code=503,
+            detail="Ollama is not running. Start it with `ollama serve`.",
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
+        msg = str(e)
+        if "not found" in msg.lower() or "does not exist" in msg.lower():
+            raise HTTPException(
+                status_code=503,
+                detail="Model not found. Pull it with: ollama pull phi3:mini",
+            )
+        raise HTTPException(status_code=500, detail=f"Query failed: {msg}")
     return RAGAskResponse(
         answer=result["answer"],
         sources=[RAGSource(**s) for s in result["sources"]],

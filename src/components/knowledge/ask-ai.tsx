@@ -165,7 +165,7 @@ export function AskAI() {
             <div className="rounded-2xl rounded-bl-md bg-slate-100 px-5 py-3">
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 text-violet-500 animate-spin" />
-                <span className="text-sm text-muted-foreground">Searching documents...</span>
+                <span className="text-sm text-muted-foreground">Reading documents with AI...</span>
               </div>
             </div>
           </div>
