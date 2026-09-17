@@ -241,7 +241,8 @@ def generate_answer(question: str) -> dict:
 
     try:
         from .llm import generate_answer as llm_generate
-        answer_text = llm_generate(question, contexts)
+        result = llm_generate(question, contexts)
+        answer_text = result["answer"] if isinstance(result, dict) else result
     except ConnectionError as e:
         raise e
     except Exception as e:
