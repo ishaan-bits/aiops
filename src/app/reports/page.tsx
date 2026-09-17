@@ -23,7 +23,12 @@ import {
 } from "@/services/reports";
 import { ReportChart } from "@/components/reports/report-charts";
 import { ReportTable } from "@/components/reports/report-table";
-import { ReportPDFExport } from "@/components/reports/report-pdf";
+import dynamic from "next/dynamic";
+
+const ReportPDFExport = dynamic(
+  () => import("@/components/reports/report-pdf").then((m) => m.ReportPDFExport),
+  { ssr: false, loading: () => <div className="h-10 w-32 animate-pulse rounded-xl bg-muted" /> }
+);
 
 const EXAMPLE_PROMPTS = [
   { text: "Generate a Q4 executive report", icon: FileBarChart },
