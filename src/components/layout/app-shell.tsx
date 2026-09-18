@@ -11,7 +11,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 shrink-0 border-r dark:border-white/[0.06] border-gray-200 dark:bg-white/[0.03] bg-white backdrop-blur-xl dark:text-gray-300 text-gray-700">
+      <aside className="hidden lg:flex lg:flex-col lg:w-60 shrink-0 border-r dark:border-white/[0.06] border-gray-200 dark:bg-white/[0.02] bg-white backdrop-blur-xl">
         <SidebarContent />
       </aside>
 

@@ -152,7 +152,7 @@ export default function DashboardPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <Toaster position="top-right" richColors />
       <input
         ref={fileInputRef}
@@ -165,51 +165,51 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight dark:text-white text-gray-900">
+          <h1 className="text-2xl font-bold tracking-tight dark:text-white text-gray-900">
             Dashboard
           </h1>
-          <p className="dark:text-white/50 text-gray-500 mt-1">
+          <p className="text-[13px] dark:text-white/40 text-gray-500 mt-0.5">
             AI Operations Command Center
           </p>
         </div>
-        <p className="text-sm dark:text-white/50 text-gray-500 mt-2 sm:mt-0">{today}</p>
+        <p className="text-[13px] dark:text-white/30 text-gray-400 mt-2 sm:mt-0">{today}</p>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {kpiCards.map((kpi, i) => (
           <motion.div
             key={kpi.title}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              delay: i * 0.1,
+              delay: i * 0.08,
               type: "spring",
-              stiffness: 300,
-              damping: 24,
+              stiffness: 400,
+              damping: 28,
             }}
-            whileHover={{ y: -4, scale: 1.01, transition: { type: "spring", stiffness: 300, damping: 24 } }}
-            className="group relative glass noise rounded-3xl p-6 transition-shadow hover:shadow-md"
+            whileHover={{ y: -2, transition: { type: "spring", stiffness: 400, damping: 28 } }}
+            className="group relative glass noise rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
           >
             <div className="flex items-start justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-medium dark:text-white/50 text-gray-500">
+              <div className="space-y-1">
+                <p className="text-[11px] font-medium uppercase tracking-wider dark:text-white/35 text-gray-400">
                   {kpi.title}
                 </p>
-                <p className="text-3xl font-bold tracking-tight dark:text-white text-gray-900">
+                <p className="text-2xl font-bold tracking-tight dark:text-white text-gray-900">
                   {kpi.value}
                 </p>
               </div>
-              <div className="rounded-xl dark:bg-white/[0.04] bg-gray-100 p-2.5 transition-colors group-hover:bg-white/[0.08]">
-                <kpi.icon className="h-5 w-5 dark:text-white/50 text-gray-500" />
+              <div className="rounded-lg dark:bg-white/[0.04] bg-gray-100 p-2 transition-colors group-hover:bg-white/[0.08]">
+                <kpi.icon className="h-4 w-4 dark:text-white/40 text-gray-500" />
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-1.5">
-              <span className="text-sm font-medium text-emerald-500 dark:text-emerald-400">
+            <div className="mt-3 flex items-center gap-1">
+              <span className="text-xs font-semibold text-emerald-500 dark:text-emerald-400">
                 {kpi.change}
               </span>
-              <span className="text-sm dark:text-white/50 text-gray-500">
-                from last month
+              <span className="text-[11px] dark:text-white/30 text-gray-400">
+                vs last month
               </span>
             </div>
           </motion.div>
@@ -217,53 +217,53 @@ export default function DashboardPage() {
       </div>
 
       {/* Middle Section: Activity + Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Recent Activity */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            delay: 0.4,
+            delay: 0.35,
             type: "spring",
-            stiffness: 300,
-            damping: 24,
+            stiffness: 400,
+            damping: 28,
           }}
-          className="lg:col-span-2 glass rounded-3xl"
+          className="lg:col-span-2 glass rounded-2xl"
         >
-          <div className="flex items-center justify-between border-b dark:border-white/[0.08] border-gray-200 px-6 py-4">
-            <h2 className="text-lg font-semibold dark:text-white text-gray-900">
+          <div className="flex items-center justify-between border-b dark:border-white/[0.06] border-gray-200 px-5 py-3.5">
+            <h2 className="text-sm font-semibold dark:text-white text-gray-900">
               Recent Activity
             </h2>
-            <button className="text-sm font-medium dark:text-white/50 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+            <button className="text-[11px] font-medium dark:text-white/30 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
               View all
             </button>
           </div>
-          <div className="divide-y dark:divide-white/[0.08] divide-gray-200">
+          <div className="divide-y dark:divide-white/[0.06] divide-gray-100">
             {activities.map((activity, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
-                  delay: 0.5 + i * 0.05,
+                  delay: 0.4 + i * 0.04,
                   type: "spring",
-                  stiffness: 300,
-                  damping: 24,
+                  stiffness: 400,
+                  damping: 28,
                 }}
-                className="flex items-start gap-4 px-6 py-4 transition-colors dark:hover:bg-white/[0.03] hover:bg-gray-50"
+                className="flex items-start gap-3 px-5 py-3 transition-colors dark:hover:bg-white/[0.02] hover:bg-gray-50"
               >
-                <div className={`mt-0.5 rounded-lg p-2 ${activity.bgColor}`}>
-                  <activity.icon className={`h-4 w-4 ${activity.color}`} />
+                <div className={`mt-0.5 rounded-md p-1.5 ${activity.bgColor}`}>
+                  <activity.icon className={`h-3.5 w-3.5 ${activity.color}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium dark:text-white text-gray-900">
+                  <p className="text-[13px] font-medium dark:text-white text-gray-900">
                     {activity.title}
                   </p>
-                  <p className="text-sm dark:text-white/50 text-gray-500 mt-0.5">
+                  <p className="text-[12px] dark:text-white/35 text-gray-500 mt-0.5">
                     {activity.description}
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs dark:text-white/50 text-gray-400 whitespace-nowrap mt-0.5">
+                <div className="flex items-center gap-1 text-[11px] dark:text-white/30 text-gray-400 whitespace-nowrap mt-0.5">
                   <Clock className="h-3 w-3" />
                   {activity.time}
                 </div>
@@ -274,26 +274,26 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            delay: 0.5,
+            delay: 0.4,
             type: "spring",
-            stiffness: 300,
-            damping: 24,
+            stiffness: 400,
+            damping: 28,
           }}
-          className="glass rounded-3xl"
+          className="glass rounded-2xl"
         >
-          <div className="border-b dark:border-white/[0.08] border-gray-200 px-6 py-4">
-            <h2 className="text-lg font-semibold dark:text-white text-gray-900">
+          <div className="border-b dark:border-white/[0.06] border-gray-200 px-5 py-3.5">
+            <h2 className="text-sm font-semibold dark:text-white text-gray-900">
               Quick Actions
             </h2>
           </div>
-          <div className="p-4 space-y-3">
+          <div className="p-3 space-y-2">
             {quickActions.map((action) => (
               <motion.button
                 key={action.title}
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   if (action.title === "Upload Documents") {
@@ -301,24 +301,24 @@ export default function DashboardPage() {
                   }
                 }}
                 disabled={action.title === "Upload Documents" && isUploading}
-                className={`w-full flex items-center gap-4 rounded-xl px-5 py-4 text-left text-white shadow-sm transition-shadow hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${action.color}`}
+                className={`w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left text-white transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed ${action.color}`}
               >
-                <div className="rounded-lg bg-white/20 p-2.5">
+                <div className="rounded-lg bg-white/20 p-2">
                   {action.title === "Upload Documents" && isUploading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <action.icon className="h-5 w-5" />
+                    <action.icon className="h-4 w-4" />
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold">
+                  <p className="text-[13px] font-semibold">
                     {action.title === "Upload Documents" && isUploading
                       ? "Uploading..."
                       : action.title}
                   </p>
-                  <p className="text-sm text-white/80">{action.description}</p>
+                  <p className="text-[11px] text-white/70">{action.description}</p>
                 </div>
-                <ArrowUpRight className="h-4 w-4 text-white/60" />
+                <ArrowUpRight className="h-3.5 w-3.5 text-white/50" />
               </motion.button>
             ))}
           </div>
@@ -327,45 +327,45 @@ export default function DashboardPage() {
 
       {/* AI Assistant Preview */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
-          delay: 0.6,
+          delay: 0.5,
           type: "spring",
-          stiffness: 300,
-          damping: 24,
+          stiffness: 400,
+          damping: 28,
         }}
-        className="glass rounded-3xl overflow-hidden"
+        className="glass rounded-2xl overflow-hidden"
       >
-        <div className="flex items-center justify-between border-b dark:border-white/[0.08] border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between border-b dark:border-white/[0.06] border-gray-200 px-5 py-3.5">
           <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-violet-500/15 p-2">
-              <Bot className="h-5 w-5 text-violet-500 dark:text-violet-400" />
+            <div className="rounded-lg bg-violet-500/10 p-1.5">
+              <Bot className="h-4 w-4 text-violet-500 dark:text-violet-400" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold dark:text-white text-gray-900">
+              <h2 className="text-sm font-semibold dark:text-white text-gray-900">
                 AI Assistant
               </h2>
-              <p className="text-sm dark:text-white/50 text-gray-500">
+              <p className="text-[11px] dark:text-white/30 text-gray-400">
                 Powered by AIOps Intelligence
               </p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-500 dark:text-emerald-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-500 dark:text-emerald-400">
+            <span className="h-1 w-1 rounded-full bg-emerald-500" />
             Online
           </span>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-5 space-y-4">
           {/* User Message */}
           <div className="flex gap-3">
-            <div className="rounded-full bg-gradient-to-br from-violet-500/20 to-indigo-500/20 p-2 h-fit">
-              <User className="h-4 w-4 dark:text-white/60 text-gray-500" />
+            <div className="rounded-full bg-gradient-to-br from-violet-500/20 to-indigo-500/20 p-1.5 h-fit">
+              <User className="h-3.5 w-3.5 dark:text-white/50 text-gray-500" />
             </div>
-            <div className="rounded-2xl rounded-tl-md dark:bg-white/[0.06] bg-gray-100 px-5 py-3 max-w-2xl">
-              <p className="text-sm font-medium dark:text-white/50 text-gray-500 mb-1">You</p>
-              <p className="text-sm dark:text-white/80 text-gray-800 leading-relaxed">
+            <div className="rounded-xl rounded-tl-md dark:bg-white/[0.05] bg-gray-100 px-4 py-2.5 max-w-2xl">
+              <p className="text-[11px] font-medium dark:text-white/30 text-gray-400 mb-0.5">You</p>
+              <p className="text-[13px] dark:text-white/80 text-gray-800 leading-relaxed">
                 &quot;Summarize all vendor contracts expiring this month.&quot;
               </p>
             </div>
@@ -373,14 +373,14 @@ export default function DashboardPage() {
 
           {/* AI Response */}
           <div className="flex gap-3">
-            <div className="rounded-full bg-gradient-to-br from-violet-500/20 to-indigo-500/20 p-2 h-fit">
-              <Bot className="h-4 w-4 text-violet-500 dark:text-violet-400" />
+            <div className="rounded-full bg-gradient-to-br from-violet-500/20 to-indigo-500/20 p-1.5 h-fit">
+              <Bot className="h-3.5 w-3.5 text-violet-500 dark:text-violet-400" />
             </div>
-            <div className="rounded-2xl rounded-tl-md bg-violet-500/10 border border-violet-500/20 px-5 py-3 max-w-2xl">
-              <p className="text-sm font-medium text-violet-500 dark:text-violet-400 mb-1">
+            <div className="rounded-xl rounded-tl-md bg-violet-500/10 border border-violet-500/20 px-4 py-2.5 max-w-2xl">
+              <p className="text-[11px] font-medium text-violet-500 dark:text-violet-400 mb-0.5">
                 AIOps
               </p>
-              <p className="text-sm dark:text-white/80 text-gray-800 leading-relaxed">
+              <p className="text-[13px] dark:text-white/80 text-gray-800 leading-relaxed">
                 I found <span className="font-semibold">12 contracts</span>.
                 Three expire within 30 days. The highest-value contract belongs
                 to{" "}
@@ -391,13 +391,13 @@ export default function DashboardPage() {
           </div>
 
           {/* View Sources */}
-          <div className="flex justify-start pl-11">
+          <div className="flex justify-start pl-10">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 glass-subtle rounded-xl px-5 py-2.5 text-sm font-medium dark:text-white text-gray-900 transition-shadow hover:shadow-md"
+              className="inline-flex items-center gap-1.5 glass-subtle rounded-lg px-4 py-2 text-[13px] font-medium dark:text-white/60 text-gray-600 transition-all hover:shadow-md"
             >
-              <ExternalLink className="h-4 w-4" />
+              <ExternalLink className="h-3.5 w-3.5" />
               View Sources
             </motion.button>
           </div>
