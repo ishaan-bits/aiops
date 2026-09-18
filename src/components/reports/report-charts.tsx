@@ -23,10 +23,10 @@ const CHART_COLORS = ["#6366f1", "#14b8a6", "#f59e0b", "#ef4444", "#8b5cf6", "#0
 function ChartTooltipContent({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; name: string }>; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg dark:bg-[#0d0f16]/90 bg-white/90 backdrop-blur dark:border-white/10 border-border px-3 py-2 shadow-md">
-      <p className="text-xs font-medium dark:text-white/40 text-muted-foreground">{label}</p>
+    <div className="rounded-lg dark:bg-[#0d0f16]/90 bg-white/90 backdrop-blur dark:border-white/10 border-gray-200 px-3 py-2 shadow-md">
+      <p className="text-xs font-medium dark:text-white/40 text-gray-500">{label}</p>
       {payload.map((entry, i) => (
-        <p key={i} className="text-sm font-semibold dark:text-white/80 text-foreground">
+        <p key={i} className="text-sm font-semibold dark:text-white/80 text-gray-800">
           {entry.value.toLocaleString(undefined, { maximumFractionDigits: 0 })}
         </p>
       ))}
@@ -37,9 +37,9 @@ function ChartTooltipContent({ active, payload, label }: { active?: boolean; pay
 function LineChartCard({ chart }: { chart: Chart }) {
   return (
     <div className="glass rounded-3xl overflow-hidden">
-      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-border px-5 py-3">
+      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-gray-200 px-5 py-3">
         <TrendingUp className="h-4 w-4 text-indigo-400" />
-        <span className="text-sm font-medium text-foreground">{chart.title}</span>
+        <span className="text-sm font-medium dark:text-white text-gray-900">{chart.title}</span>
       </div>
       <div className="p-5">
         <ResponsiveContainer width="100%" height={280}>
@@ -59,9 +59,9 @@ function LineChartCard({ chart }: { chart: Chart }) {
 function BarChartCard({ chart }: { chart: Chart }) {
   return (
     <div className="glass rounded-3xl overflow-hidden">
-      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-border px-5 py-3">
+      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-gray-200 px-5 py-3">
         <BarChart3 className="h-4 w-4 text-teal-400" />
-        <span className="text-sm font-medium text-foreground">{chart.title}</span>
+        <span className="text-sm font-medium dark:text-white text-gray-900">{chart.title}</span>
       </div>
       <div className="p-5">
         <ResponsiveContainer width="100%" height={280}>
@@ -85,9 +85,9 @@ function BarChartCard({ chart }: { chart: Chart }) {
 function DonutChartCard({ chart }: { chart: Chart }) {
   return (
     <div className="glass rounded-3xl overflow-hidden">
-      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-border px-5 py-3">
-        <PieChartIcon className="h-4 w-4 text-amber-400" />
-        <span className="text-sm font-medium text-foreground">{chart.title}</span>
+      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-gray-200 px-5 py-3">
+        <PieChartIcon className="h-4 w-4 dark:text-amber-400 text-amber-600" />
+        <span className="text-sm font-medium dark:text-white text-gray-900">{chart.title}</span>
       </div>
       <div className="p-5">
         <ResponsiveContainer width="100%" height={280}>
@@ -109,7 +109,7 @@ function DonutChartCard({ chart }: { chart: Chart }) {
             <Legend
               verticalAlign="bottom"
               height={36}
-              formatter={(value: string) => <span className="text-xs dark:text-white/40 text-muted-foreground">{value}</span>}
+              formatter={(value: string) => <span className="text-xs dark:text-white/40 text-gray-500">{value}</span>}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -121,9 +121,9 @@ function DonutChartCard({ chart }: { chart: Chart }) {
 function HorizontalBarChartCard({ chart }: { chart: Chart }) {
   return (
     <div className="glass rounded-3xl overflow-hidden">
-      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-border px-5 py-3">
-        <LayoutGrid className="h-4 w-4 text-rose-400" />
-        <span className="text-sm font-medium text-foreground">{chart.title}</span>
+      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-gray-200 px-5 py-3">
+        <LayoutGrid className="h-4 w-4 dark:text-rose-400 text-rose-600" />
+        <span className="text-sm font-medium dark:text-white text-gray-900">{chart.title}</span>
       </div>
       <div className="p-5">
         <div className="space-y-3">
@@ -131,11 +131,11 @@ function HorizontalBarChartCard({ chart }: { chart: Chart }) {
             const maxVal = Math.max(...chart.data.map((item) => item.value));
             return (
               <div key={d.name} className="flex items-center gap-3">
-                <div className="w-32 shrink-0 truncate text-sm dark:text-white/40 text-muted-foreground" title={d.name}>
+                <div className="w-32 shrink-0 truncate text-sm dark:text-white/40 text-gray-500" title={d.name}>
                   {d.name}
                 </div>
                 <div className="flex-1">
-                  <div className="relative h-7 rounded-md dark:bg-white/[0.04] bg-muted/50">
+                  <div className="relative h-7 rounded-md dark:bg-white/[0.04] bg-gray-100">
                     <div
                       className="absolute inset-y-0 left-0 rounded-md transition-all duration-500"
                       style={{

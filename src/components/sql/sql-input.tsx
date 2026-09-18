@@ -28,7 +28,7 @@ export function SQLInput({ onGenerate, loading }: SQLInputProps) {
   return (
     <div className="space-y-3">
       <div className="relative">
-        <Sparkles className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 dark:text-white/30 text-muted-foreground" />
+        <Sparkles className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 dark:text-white/30 text-gray-400" />
         <input
           type="text"
           value={question}
@@ -36,7 +36,7 @@ export function SQLInput({ onGenerate, loading }: SQLInputProps) {
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           placeholder="Ask a question about your data..."
           disabled={loading}
-          className="h-14 w-full rounded-xl border dark:border-white/[0.08] border-border dark:bg-white/[0.04] bg-muted/50 pl-12 pr-28 text-base dark:text-white/80 text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-violet-500/40 dark:focus:bg-white/[0.06] focus:bg-muted focus:ring-2 focus:ring-violet-500/20 disabled:opacity-50"
+          className="h-14 w-full rounded-xl dark:border-white/[0.08] border-gray-200 dark:bg-white/[0.04] bg-gray-100 pl-12 pr-28 text-base dark:text-white/80 text-gray-800 placeholder:text-gray-400 outline-none transition-all focus:border-violet-500/40 dark:focus:bg-white/[0.06] focus:bg-gray-50 focus:ring-2 focus:ring-violet-500/20 disabled:opacity-50"
         />
         <div className="absolute right-2 top-1/2 -translate-y-1/2">
           <button
@@ -62,7 +62,7 @@ export function SQLInput({ onGenerate, loading }: SQLInputProps) {
               onGenerate(s);
             }}
             disabled={loading}
-            className="glass-subtle rounded-lg px-3 py-1.5 text-xs font-medium dark:text-white/40 text-muted-foreground transition-colors hover:text-white/70 disabled:opacity-50"
+            className="glass-subtle rounded-lg px-3 py-1.5 text-xs font-medium dark:text-white/40 text-gray-500 transition-colors hover:text-white/70 disabled:opacity-50"
           >
             {s}
           </button>

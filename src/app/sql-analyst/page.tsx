@@ -94,8 +94,8 @@ export default function SQLAnalystPage() {
       >
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">SQL Analyst</h1>
-            <p className="mt-1 text-muted-foreground">
+            <h1 className="text-3xl font-bold tracking-tight dark:text-white text-gray-900">SQL Analyst</h1>
+            <p className="mt-1 dark:text-white/50 text-gray-500">
               Ask questions in natural language — get SQL answers instantly
             </p>
           </div>
@@ -116,9 +116,9 @@ export default function SQLAnalystPage() {
         className="glass rounded-3xl p-5"
       >
         <div className="flex items-center gap-2 mb-3">
-          <Database className="h-4 w-4 text-violet-400" />
-          <span className="text-sm font-medium text-foreground">vendor_payments</span>
-          <span className="text-xs dark:text-white/40 text-muted-foreground">24 records</span>
+          <Database className="h-4 w-4 dark:text-violet-400 text-violet-600" />
+          <span className="text-sm font-medium dark:text-white text-gray-900">vendor_payments</span>
+          <span className="text-xs dark:text-white/40 text-gray-500">24 records</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {[
@@ -133,10 +133,10 @@ export default function SQLAnalystPage() {
           ].map((col) => (
             <div
               key={col.name}
-              className="flex items-center gap-1.5 rounded-lg dark:bg-white/[0.04] bg-muted/50 dark:border-white/[0.06] border-border px-2.5 py-1 text-xs"
+              className="flex items-center gap-1.5 rounded-lg dark:bg-white/[0.04] bg-gray-100 dark:border-white/[0.06] border-gray-200 px-2.5 py-1 text-xs"
             >
-              <span className="font-medium dark:text-white/80 text-foreground">{col.name}</span>
-              <span className="dark:text-white/30 text-muted-foreground">{col.type}</span>
+              <span className="font-medium dark:text-white/80 text-gray-800">{col.name}</span>
+              <span className="dark:text-white/30 text-gray-500">{col.type}</span>
             </div>
           ))}
         </div>
@@ -190,7 +190,7 @@ export default function SQLAnalystPage() {
             {query.results && (
               <button
                 onClick={handleExportCSV}
-                className="glass-subtle inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium dark:text-white/80 text-foreground transition-all hover:text-white"
+                className="glass-subtle inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium dark:text-white/80 text-gray-800 transition-all hover:text-white"
               >
                 <Download className="h-4 w-4" />
                 Export CSV
@@ -222,7 +222,7 @@ export default function SQLAnalystPage() {
           ) : (
             <div className="glass rounded-3xl p-10 text-center">
               <Sparkles className="mx-auto h-8 w-8 text-white/20" />
-              <p className="mt-3 text-sm dark:text-white/40 text-muted-foreground">No results found for this query.</p>
+              <p className="mt-3 text-sm dark:text-white/40 text-gray-500">No results found for this query.</p>
             </div>
           )}
         </motion.div>

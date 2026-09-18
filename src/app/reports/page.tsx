@@ -27,7 +27,7 @@ import dynamic from "next/dynamic";
 
 const ReportPDFExport = dynamic(
   () => import("@/components/reports/report-pdf").then((m) => m.ReportPDFExport),
-  { ssr: false, loading: () => <div className="h-10 w-32 animate-pulse rounded-xl dark:bg-white/[0.04] bg-muted/50" /> }
+  { ssr: false, loading: () => <div className="h-10 w-32 animate-pulse rounded-xl dark:bg-white/[0.04] bg-gray-100" /> }
 );
 
 const EXAMPLE_PROMPTS = [
@@ -51,8 +51,8 @@ function KPICard({ kpi, index }: { kpi: KPI; index: number }) {
     kpi.changeType === "positive"
       ? "text-emerald-400 bg-emerald-500/10"
       : kpi.changeType === "negative"
-        ? "text-rose-400 bg-rose-500/10"
-        : "dark:text-white/40 text-muted-foreground dark:bg-white/[0.04] bg-muted/50";
+        ? "dark:text-rose-400 text-rose-600 bg-rose-500/10"
+        : "dark:text-white/40 text-gray-500 dark:bg-white/[0.04] bg-gray-100";
 
   return (
     <motion.div
@@ -64,8 +64,8 @@ function KPICard({ kpi, index }: { kpi: KPI; index: number }) {
     >
       <div className="absolute inset-0 rounded-3xl bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1Ii8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWx0ZXI9InVybCgjbikiIG9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=')] opacity-50 pointer-events-none" />
       <div className="relative z-10 space-y-2">
-        <p className="text-sm font-medium dark:text-white/40 text-muted-foreground">{kpi.label}</p>
-        <p className="text-3xl font-bold tracking-tight text-foreground">{kpi.value}</p>
+        <p className="text-sm font-medium dark:text-white/40 text-gray-500">{kpi.label}</p>
+        <p className="text-3xl font-bold tracking-tight dark:text-white text-gray-900">{kpi.value}</p>
       </div>
       {kpi.change && (
         <div className={`relative z-10 mt-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${changeColor}`}>
@@ -90,8 +90,8 @@ function LoadingState() {
           <Brain className="h-10 w-10 text-white animate-pulse" />
         </div>
       </div>
-      <h3 className="mt-6 text-lg font-semibold text-foreground">AI is preparing your report...</h3>
-      <p className="mt-2 text-sm dark:text-white/40 text-muted-foreground max-w-sm text-center">
+      <h3 className="mt-6 text-lg font-semibold dark:text-white text-gray-900">AI is preparing your report...</h3>
+      <p className="mt-2 text-sm dark:text-white/40 text-gray-500 max-w-sm text-center">
         Classifying your request, gathering data, and generating insights
       </p>
       <div className="mt-4 flex items-center gap-2">
@@ -162,8 +162,8 @@ export default function ReportsPage() {
           >
             {/* Header */}
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">Reports</h1>
-              <p className="dark:text-white/40 text-muted-foreground mt-1">
+              <h1 className="text-3xl font-bold tracking-tight dark:text-white text-gray-900">Reports</h1>
+              <p className="dark:text-white/40 text-gray-500 mt-1">
                 AI-powered executive reports from natural language
               </p>
             </div>
@@ -175,13 +175,13 @@ export default function ReportsPage() {
               transition={{ delay: 0.1, duration: 0.5 }}
               className="glass rounded-3xl overflow-hidden"
             >
-              <div className="flex items-center gap-3 border-b dark:border-white/[0.08] border-border px-6 py-4">
+              <div className="flex items-center gap-3 dark:border-white/[0.08] border-gray-200 border-b px-6 py-4">
                 <div className="rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 p-2.5">
                   <Bot className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-base font-semibold text-foreground">Executive AI Reports</h2>
-                  <p className="text-xs dark:text-white/40 text-muted-foreground">Powered by AIOps Intelligence</p>
+                  <h2 className="text-base font-semibold dark:text-white text-gray-900">Executive AI Reports</h2>
+                  <p className="text-xs dark:text-white/40 text-gray-500">Powered by AIOps Intelligence</p>
                 </div>
               </div>
 
@@ -199,7 +199,7 @@ export default function ReportsPage() {
                     }}
                     placeholder="Ask AI to generate an executive report..."
                     rows={3}
-                    className="w-full resize-none rounded-xl border dark:border-white/[0.08] border-border dark:bg-white/[0.04] bg-muted/50 px-5 py-4 pr-36 text-sm dark:text-white/80 text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-violet-500/40 dark:focus:bg-white/[0.06] focus:bg-muted focus:ring-2 focus:ring-violet-500/20"
+                    className="w-full resize-none rounded-xl dark:border-white/[0.08] border-gray-200 dark:bg-white/[0.04] bg-gray-100 px-5 py-4 pr-36 text-sm dark:text-white/80 text-gray-800 placeholder:text-gray-400 outline-none transition-colors focus:border-violet-500/40 dark:focus:bg-white/[0.06] focus:bg-gray-50 focus:ring-2 focus:ring-violet-500/20"
                   />
                   <button
                     type="submit"
@@ -213,15 +213,15 @@ export default function ReportsPage() {
               </form>
 
               {/* Example Chips */}
-              <div className="border-t dark:border-white/[0.08] border-border px-6 py-4">
-                <p className="text-xs font-medium dark:text-white/30 text-muted-foreground mb-3">Try an example</p>
+              <div className="dark:border-white/[0.08] border-gray-200 border-t px-6 py-4">
+                <p className="text-xs font-medium dark:text-white/30 text-gray-500 mb-3">Try an example</p>
                 <div className="flex flex-wrap gap-2">
                   {EXAMPLE_PROMPTS.map((example) => (
                     <button
                       key={example.text}
                       onClick={() => handleChipClick(example.text)}
                       disabled={loading}
-                      className="glass-subtle inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium dark:text-white/50 text-muted-foreground transition-all hover:border-violet-500/20 hover:text-violet-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="glass-subtle inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium dark:text-white/50 text-gray-500 transition-all hover:border-violet-500/20 hover:text-violet-400 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <example.icon className="h-3.5 w-3.5" />
                       {example.text}
@@ -267,19 +267,19 @@ export default function ReportsPage() {
                   onClick={handleBack}
                   className="glass-subtle rounded-xl p-2.5 transition-all hover:text-white"
                 >
-                  <ArrowLeft className="h-5 w-5 dark:text-white/40 text-muted-foreground" />
+                  <ArrowLeft className="h-5 w-5 dark:text-white/40 text-gray-500" />
                 </button>
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                  <h1 className="text-3xl font-bold tracking-tight dark:text-white text-gray-900">
                     {report.title}
                   </h1>
-                  <div className="flex items-center gap-3 mt-1 text-sm dark:text-white/40 text-muted-foreground">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 px-2.5 py-0.5 text-xs font-medium text-violet-400">
+                  <div className="flex items-center gap-3 mt-1 text-sm dark:text-white/40 text-gray-500">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 px-2.5 py-0.5 text-xs font-medium dark:text-violet-400 text-violet-600">
                       <Brain className="h-3 w-3" />
                       {aiResult?.detected_template?.charAt(0).toUpperCase() + (aiResult?.detected_template?.slice(1) || "")} Report
                     </span>
                     {aiResult?.confidence !== undefined && (
-                      <span className="text-xs dark:text-white/40 text-muted-foreground">
+                      <span className="text-xs dark:text-white/40 text-gray-500">
                         {Math.round(aiResult.confidence * 100)}% confidence
                       </span>
                     )}
@@ -309,7 +309,7 @@ export default function ReportsPage() {
               >
                 <div className="flex items-start gap-3">
                   <div className="rounded-xl bg-violet-500/15 p-2">
-                    <Sparkles className="h-4 w-4 text-violet-400" />
+                    <Sparkles className="h-4 w-4 dark:text-violet-400 text-violet-600" />
                   </div>
                   <div className="flex-1">
                     <h2 className="text-sm font-semibold text-violet-300 mb-2">AI Analysis</h2>
@@ -328,8 +328,8 @@ export default function ReportsPage() {
               transition={{ delay: 0.15, duration: 0.4 }}
               className="glass rounded-3xl p-6"
             >
-              <h2 className="text-sm font-semibold text-foreground mb-3">Executive Summary</h2>
-              <p className="text-sm dark:text-white/50 text-muted-foreground leading-relaxed whitespace-pre-line">
+              <h2 className="text-sm font-semibold dark:text-white text-gray-900 mb-3">Executive Summary</h2>
+              <p className="text-sm dark:text-white/50 text-gray-500 leading-relaxed whitespace-pre-line">
                 {report.summary}
               </p>
             </motion.div>

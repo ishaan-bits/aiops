@@ -41,20 +41,20 @@ export function ReportTable({ table }: { table: ReportTableType }) {
 
   return (
     <div className="glass rounded-3xl overflow-hidden">
-      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-border px-5 py-3">
-        <Table className="h-4 w-4 text-violet-400" />
-        <span className="text-sm font-medium text-foreground">{table.title}</span>
-        <span className="text-xs dark:text-white/30 text-muted-foreground">({table.rows.length} rows)</span>
+      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-gray-200 px-5 py-3">
+        <Table className="h-4 w-4 dark:text-violet-400 text-violet-600" />
+        <span className="text-sm font-medium dark:text-white text-gray-900">{table.title}</span>
+        <span className="text-xs dark:text-white/30 text-gray-500">({table.rows.length} rows)</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b dark:border-white/[0.08] border-border dark:bg-white/[0.04] bg-muted/50">
+            <tr className="border-b dark:border-white/[0.08] border-gray-200 dark:bg-white/[0.04] bg-gray-100">
               {table.columns.map((col) => (
                 <th
                   key={col.key}
                   onClick={() => handleSort(col.key)}
-                  className="cursor-pointer px-4 py-3 text-left font-medium dark:text-white/40 text-muted-foreground transition-colors hover:text-white/70"
+                  className="cursor-pointer px-4 py-3 text-left font-medium dark:text-white/40 text-gray-500 transition-colors hover:text-white/70"
                 >
                   <div className="flex items-center gap-1.5">
                     {col.label}
@@ -76,10 +76,10 @@ export function ReportTable({ table }: { table: ReportTableType }) {
             {pageRows.map((row, i) => (
               <tr
                 key={i}
-                className="border-b dark:border-white/[0.06] border-border transition-colors dark:hover:bg-white/[0.03] hover:bg-muted/50 last:border-b-0"
+                className="border-b dark:border-white/[0.06] border-gray-200 transition-colors dark:hover:bg-white/[0.03] hover:bg-gray-50 last:border-b-0"
               >
                 {table.columns.map((col) => (
-                  <td key={col.key} className="px-4 py-3 dark:text-white/70 text-foreground">
+                  <td key={col.key} className="px-4 py-3 dark:text-white/70 text-gray-800">
                     {formatCellValue(row.values[col.key])}
                   </td>
                 ))}
@@ -89,22 +89,22 @@ export function ReportTable({ table }: { table: ReportTableType }) {
         </table>
       </div>
       {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t dark:border-white/[0.08] border-border px-5 py-3">
-          <span className="text-xs dark:text-white/30 text-muted-foreground">
+        <div className="flex items-center justify-between border-t dark:border-white/[0.08] border-gray-200 px-5 py-3">
+          <span className="text-xs dark:text-white/30 text-gray-500">
             Page {page + 1} of {totalPages}
           </span>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setPage(Math.max(0, page - 1))}
               disabled={page === 0}
-              className="rounded-md p-1.5 dark:text-white/30 text-muted-foreground transition-colors dark:hover:bg-white/[0.06] hover:bg-muted hover:text-white/70 disabled:opacity-30"
+              className="rounded-md p-1.5 dark:text-white/30 text-gray-500 transition-colors dark:hover:bg-white/[0.06] hover:bg-gray-100 hover:text-white/70 disabled:opacity-30"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
               disabled={page >= totalPages - 1}
-              className="rounded-md p-1.5 dark:text-white/30 text-muted-foreground transition-colors dark:hover:bg-white/[0.06] hover:bg-muted hover:text-white/70 disabled:opacity-30"
+              className="rounded-md p-1.5 dark:text-white/30 text-gray-500 transition-colors dark:hover:bg-white/[0.06] hover:bg-gray-100 hover:text-white/70 disabled:opacity-30"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

@@ -74,13 +74,13 @@ export function AskAI() {
   return (
     <div className="glass flex flex-col rounded-3xl overflow-hidden" style={{ height: "calc(100vh - 280px)", minHeight: "500px" }}>
       {/* Header */}
-      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-border px-5 py-3">
+      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-gray-200 px-5 py-3">
         <div className="rounded-xl bg-violet-500/15 p-2">
           <Sparkles className="h-4 w-4 text-violet-400" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-foreground">Ask AI</h3>
-          <p className="text-xs dark:text-white/40 text-muted-foreground">Search across your documents</p>
+          <h3 className="text-sm font-semibold dark:text-white text-gray-900">Ask AI</h3>
+          <p className="text-xs dark:text-white/40 text-gray-500">Search across your documents</p>
         </div>
         <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -95,14 +95,14 @@ export function AskAI() {
             <div className="rounded-3xl bg-violet-500/10 border border-violet-500/20 p-4 mb-4">
               <BookOpen className="h-8 w-8 text-violet-400" />
             </div>
-            <p className="text-sm font-medium text-foreground mb-1">Ask anything about your documents</p>
-            <p className="text-xs dark:text-white/40 text-muted-foreground mb-6">Upload documents to your Knowledge Base, then ask questions here.</p>
+            <p className="text-sm font-medium dark:text-white text-gray-900 mb-1">Ask anything about your documents</p>
+            <p className="text-xs dark:text-white/40 text-gray-500 mb-6">Upload documents to your Knowledge Base, then ask questions here.</p>
             <div className="flex flex-wrap gap-2 justify-center max-w-md">
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
                   onClick={() => handleSend(s)}
-                  className="glass-subtle rounded-lg px-3 py-1.5 text-xs font-medium dark:text-white/40 text-muted-foreground transition-colors hover:text-white/70"
+                  className="glass-subtle rounded-lg px-3 py-1.5 text-xs font-medium dark:text-white/40 text-gray-500 transition-colors hover:text-white/70"
                 >
                   {s}
                 </button>
@@ -123,7 +123,7 @@ export function AskAI() {
                 className={`rounded-2xl px-5 py-3 ${
                   msg.role === "user"
                     ? "bg-gradient-to-br from-indigo-500 to-violet-500 text-white rounded-br-md"
-                    : "dark:bg-white/[0.06] bg-muted dark:text-white/80 text-foreground rounded-bl-md"
+                    : "dark:bg-white/[0.06] bg-gray-100 dark:text-white/80 text-gray-800 rounded-bl-md"
                 }`}
               >
                 {msg.role === "ai" && (
@@ -138,17 +138,17 @@ export function AskAI() {
               {/* Sources */}
               {msg.sources && msg.sources.length > 0 && (
                 <div className="mt-2 space-y-1.5">
-                  <p className="text-xs font-medium dark:text-white/30 text-muted-foreground px-1">Sources</p>
+                  <p className="text-xs font-medium dark:text-white/30 text-gray-500 px-1">Sources</p>
                   {msg.sources.map((src, i) => (
                     <div
                       key={i}
                       className="glass-subtle flex items-center gap-2 rounded-lg px-3 py-2"
                     >
-                      <BookOpen className="h-3.5 w-3.5 dark:text-white/30 text-muted-foreground shrink-0" />
-                      <span className="text-xs font-medium dark:text-white/70 text-foreground truncate">{src.document}</span>
-                      <span className="text-xs dark:text-white/20 text-muted-foreground">·</span>
-                      <span className="text-xs dark:text-white/30 text-muted-foreground">Page {src.page}</span>
-                      <span className="ml-auto text-xs dark:text-white/30 text-muted-foreground">{Math.round(src.score * 100)}%</span>
+                      <BookOpen className="h-3.5 w-3.5 dark:text-white/30 text-gray-500 shrink-0" />
+                      <span className="text-xs font-medium dark:text-white/70 text-gray-800 truncate">{src.document}</span>
+                      <span className="text-xs dark:text-white/20 text-gray-400">·</span>
+                      <span className="text-xs dark:text-white/30 text-gray-500">Page {src.page}</span>
+                      <span className="ml-auto text-xs dark:text-white/30 text-gray-500">{Math.round(src.score * 100)}%</span>
                     </div>
                   ))}
                 </div>
@@ -162,10 +162,10 @@ export function AskAI() {
             <div className="rounded-full bg-violet-500/15 p-2 h-fit shrink-0">
               <Sparkles className="h-4 w-4 text-violet-400" />
             </div>
-            <div className="rounded-2xl rounded-bl-md dark:bg-white/[0.06] bg-muted px-5 py-3">
+            <div className="rounded-2xl rounded-bl-md dark:bg-white/[0.06] bg-gray-100 px-5 py-3">
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 text-violet-400 animate-spin" />
-                <span className="text-sm dark:text-white/40 text-muted-foreground">Reading documents with AI...</span>
+                <span className="text-sm dark:text-white/40 text-gray-500">Reading documents with AI...</span>
               </div>
             </div>
           </div>
@@ -173,7 +173,7 @@ export function AskAI() {
       </div>
 
       {/* Input */}
-      <div className="border-t dark:border-white/[0.08] border-border p-4">
+      <div className="border-t dark:border-white/[0.08] border-gray-200 p-4">
         <div className="flex items-end gap-2">
           <textarea
             ref={inputRef}
@@ -188,7 +188,7 @@ export function AskAI() {
             placeholder="Ask a question about your documents..."
             rows={1}
             disabled={loading}
-            className="flex-1 resize-none rounded-xl border dark:border-white/[0.08] border-border dark:bg-white/[0.04] bg-muted/50 px-4 py-2.5 text-sm dark:text-white/80 text-foreground placeholder:text-muted-foreground outline-none focus:border-violet-500/40 dark:focus:bg-white/[0.06] focus:bg-muted focus:ring-2 focus:ring-violet-500/20 disabled:opacity-50"
+            className="flex-1 resize-none rounded-xl border dark:border-white/[0.08] border-gray-200 dark:bg-white/[0.04] bg-gray-100 px-4 py-2.5 text-sm dark:text-white/80 text-gray-800 placeholder:text-gray-400 outline-none focus:border-violet-500/40 dark:focus:bg-white/[0.06] focus:bg-gray-50 focus:ring-2 focus:ring-violet-500/20 disabled:opacity-50"
           />
           <button
             onClick={() => handleSend()}
@@ -198,7 +198,7 @@ export function AskAI() {
             <Send className="h-4 w-4" />
           </button>
         </div>
-        <p className="mt-2 text-xs dark:text-white/20 text-muted-foreground text-center">
+        <p className="mt-2 text-xs dark:text-white/20 text-gray-400 text-center">
           Press Enter to send · Shift+Enter for newline
         </p>
       </div>

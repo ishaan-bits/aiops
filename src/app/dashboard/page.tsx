@@ -165,14 +165,14 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="text-3xl font-bold tracking-tight dark:text-white text-gray-900">
             Dashboard
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="dark:text-white/50 text-gray-500 mt-1">
             AI Operations Command Center
           </p>
         </div>
-        <p className="text-sm text-muted-foreground mt-2 sm:mt-0">{today}</p>
+        <p className="text-sm dark:text-white/50 text-gray-500 mt-2 sm:mt-0">{today}</p>
       </div>
 
       {/* KPI Cards */}
@@ -193,22 +193,22 @@ export default function DashboardPage() {
           >
             <div className="flex items-start justify-between">
               <div className="space-y-2">
-                <p className="text-sm font-medium dark:text-white/50 text-muted-foreground">
+                <p className="text-sm font-medium dark:text-white/50 text-gray-500">
                   {kpi.title}
                 </p>
-                <p className="text-3xl font-bold tracking-tight text-foreground">
+                <p className="text-3xl font-bold tracking-tight dark:text-white text-gray-900">
                   {kpi.value}
                 </p>
               </div>
-              <div className="rounded-xl dark:bg-white/[0.04] bg-muted/50 p-2.5 transition-colors group-hover:bg-white/[0.08]">
-                <kpi.icon className="h-5 w-5 dark:text-white/50 text-muted-foreground" />
+              <div className="rounded-xl dark:bg-white/[0.04] bg-gray-100 p-2.5 transition-colors group-hover:bg-white/[0.08]">
+                <kpi.icon className="h-5 w-5 dark:text-white/50 text-gray-500" />
               </div>
             </div>
             <div className="mt-4 flex items-center gap-1.5">
-              <span className="text-sm font-medium text-emerald-400">
+              <span className="text-sm font-medium text-emerald-500 dark:text-emerald-400">
                 {kpi.change}
               </span>
-              <span className="text-sm dark:text-white/50 text-muted-foreground">
+              <span className="text-sm dark:text-white/50 text-gray-500">
                 from last month
               </span>
             </div>
@@ -230,15 +230,15 @@ export default function DashboardPage() {
           }}
           className="lg:col-span-2 glass rounded-3xl"
         >
-          <div className="flex items-center justify-between border-b dark:border-white/[0.08] border-border px-6 py-4">
-            <h2 className="text-lg font-semibold text-foreground">
+          <div className="flex items-center justify-between border-b dark:border-white/[0.08] border-gray-200 px-6 py-4">
+            <h2 className="text-lg font-semibold dark:text-white text-gray-900">
               Recent Activity
             </h2>
-            <button className="text-sm font-medium dark:text-white/50 text-muted-foreground hover:text-foreground transition-colors">
+            <button className="text-sm font-medium dark:text-white/50 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
               View all
             </button>
           </div>
-          <div className="divide-y dark:divide-white/[0.08] divide-border">
+          <div className="divide-y dark:divide-white/[0.08] divide-gray-200">
             {activities.map((activity, i) => (
               <motion.div
                 key={i}
@@ -250,20 +250,20 @@ export default function DashboardPage() {
                   stiffness: 300,
                   damping: 24,
                 }}
-                className="flex items-start gap-4 px-6 py-4 transition-colors dark:hover:bg-white/[0.03] hover:bg-muted/30"
+                className="flex items-start gap-4 px-6 py-4 transition-colors dark:hover:bg-white/[0.03] hover:bg-gray-50"
               >
                 <div className={`mt-0.5 rounded-lg p-2 ${activity.bgColor}`}>
                   <activity.icon className={`h-4 w-4 ${activity.color}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="text-sm font-medium dark:text-white text-gray-900">
                     {activity.title}
                   </p>
-                  <p className="text-sm dark:text-white/50 text-muted-foreground mt-0.5">
+                  <p className="text-sm dark:text-white/50 text-gray-500 mt-0.5">
                     {activity.description}
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs dark:text-white/50 text-muted-foreground whitespace-nowrap mt-0.5">
+                <div className="flex items-center gap-1.5 text-xs dark:text-white/50 text-gray-400 whitespace-nowrap mt-0.5">
                   <Clock className="h-3 w-3" />
                   {activity.time}
                 </div>
@@ -284,8 +284,8 @@ export default function DashboardPage() {
           }}
           className="glass rounded-3xl"
         >
-          <div className="border-b dark:border-white/[0.08] border-border px-6 py-4">
-            <h2 className="text-lg font-semibold text-foreground">
+          <div className="border-b dark:border-white/[0.08] border-gray-200 px-6 py-4">
+            <h2 className="text-lg font-semibold dark:text-white text-gray-900">
               Quick Actions
             </h2>
           </div>
@@ -316,9 +316,9 @@ export default function DashboardPage() {
                       ? "Uploading..."
                       : action.title}
                   </p>
-                  <p className="text-sm dark:text-white/80 text-white/80">{action.description}</p>
+                  <p className="text-sm text-white/80">{action.description}</p>
                 </div>
-                <ArrowUpRight className="h-4 w-4 dark:text-white/60 text-white/60" />
+                <ArrowUpRight className="h-4 w-4 text-white/60" />
               </motion.button>
             ))}
           </div>
@@ -337,21 +337,21 @@ export default function DashboardPage() {
         }}
         className="glass rounded-3xl overflow-hidden"
       >
-        <div className="flex items-center justify-between border-b dark:border-white/[0.08] border-border px-6 py-4">
+        <div className="flex items-center justify-between border-b dark:border-white/[0.08] border-gray-200 px-6 py-4">
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-violet-500/15 p-2">
-              <Bot className="h-5 w-5 text-violet-400" />
+              <Bot className="h-5 w-5 text-violet-500 dark:text-violet-400" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="text-lg font-semibold dark:text-white text-gray-900">
                 AI Assistant
               </h2>
-              <p className="text-sm dark:text-white/50 text-muted-foreground">
+              <p className="text-sm dark:text-white/50 text-gray-500">
                 Powered by AIOps Intelligence
               </p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-500 dark:text-emerald-400">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             Online
           </span>
@@ -361,11 +361,11 @@ export default function DashboardPage() {
           {/* User Message */}
           <div className="flex gap-3">
             <div className="rounded-full bg-gradient-to-br from-violet-500/20 to-indigo-500/20 p-2 h-fit">
-              <User className="h-4 w-4 dark:text-white/60 text-white/60" />
+              <User className="h-4 w-4 dark:text-white/60 text-gray-500" />
             </div>
-            <div className="rounded-2xl rounded-tl-md dark:bg-white/[0.06] bg-muted px-5 py-3 max-w-2xl">
-              <p className="text-sm font-medium dark:text-white/50 text-muted-foreground mb-1">You</p>
-              <p className="text-sm text-foreground leading-relaxed">
+            <div className="rounded-2xl rounded-tl-md dark:bg-white/[0.06] bg-gray-100 px-5 py-3 max-w-2xl">
+              <p className="text-sm font-medium dark:text-white/50 text-gray-500 mb-1">You</p>
+              <p className="text-sm dark:text-white/80 text-gray-800 leading-relaxed">
                 &quot;Summarize all vendor contracts expiring this month.&quot;
               </p>
             </div>
@@ -374,13 +374,13 @@ export default function DashboardPage() {
           {/* AI Response */}
           <div className="flex gap-3">
             <div className="rounded-full bg-gradient-to-br from-violet-500/20 to-indigo-500/20 p-2 h-fit">
-              <Bot className="h-4 w-4 text-violet-400" />
+              <Bot className="h-4 w-4 text-violet-500 dark:text-violet-400" />
             </div>
             <div className="rounded-2xl rounded-tl-md bg-violet-500/10 border border-violet-500/20 px-5 py-3 max-w-2xl">
-              <p className="text-sm font-medium text-violet-400 mb-1">
+              <p className="text-sm font-medium text-violet-500 dark:text-violet-400 mb-1">
                 AIOps
               </p>
-              <p className="text-sm text-foreground leading-relaxed">
+              <p className="text-sm dark:text-white/80 text-gray-800 leading-relaxed">
                 I found <span className="font-semibold">12 contracts</span>.
                 Three expire within 30 days. The highest-value contract belongs
                 to{" "}
@@ -395,7 +395,7 @@ export default function DashboardPage() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 glass-subtle rounded-xl px-5 py-2.5 text-sm font-medium text-foreground transition-shadow hover:shadow-md"
+              className="inline-flex items-center gap-2 glass-subtle rounded-xl px-5 py-2.5 text-sm font-medium dark:text-white text-gray-900 transition-shadow hover:shadow-md"
             >
               <ExternalLink className="h-4 w-4" />
               View Sources

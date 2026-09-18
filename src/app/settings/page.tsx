@@ -8,15 +8,15 @@ export default function SettingsPage() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground mb-2">Settings</h1>
-        <p className="text-sm dark:text-white/40 text-muted-foreground mb-6">
+        <h1 className="text-2xl font-bold tracking-tight dark:text-white text-gray-900 mb-2">Settings</h1>
+        <p className="text-sm dark:text-white/40 text-gray-500 mb-6">
           Manage your account preferences and integrations
         </p>
         <div className="rounded-xl bg-gradient-to-r from-violet-500/10 via-indigo-500/10 to-violet-500/10 border border-violet-500/20 px-5 py-4">
-          <p className="text-sm font-medium text-violet-300">
+          <p className="text-sm font-medium dark:text-violet-400 text-violet-600">
             Coming Soon
           </p>
-          <p className="text-xs text-violet-400/60 mt-1">
+          <p className="text-xs dark:text-violet-400/60 text-violet-500/70 mt-1">
             Configuration options will be available in a future update
           </p>
         </div>

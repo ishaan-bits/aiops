@@ -68,9 +68,9 @@ export function ChartPanel({ columns, rows }: ChartPanelProps) {
 
   return (
     <div className="glass rounded-3xl overflow-hidden">
-      <div className="flex items-center gap-2 border-b dark:border-white/[0.08] border-border px-5 py-3">
-        <BarChart3 className="h-4 w-4 text-violet-400" />
-        <span className="text-sm font-medium text-foreground">
+      <div className="flex items-center gap-2 dark:border-white/[0.08] border-gray-200 border-b px-5 py-3">
+        <BarChart3 className="h-4 w-4 dark:text-violet-400 text-violet-600" />
+        <span className="text-sm font-medium dark:text-white text-gray-900">
           {chartData.numeric} by {chartData.categorical}
         </span>
       </div>
@@ -78,11 +78,11 @@ export function ChartPanel({ columns, rows }: ChartPanelProps) {
         <div className="space-y-3">
           {chartData.data.map((d, i) => (
             <div key={d.label} className="flex items-center gap-3">
-              <div className="w-36 shrink-0 truncate text-sm dark:text-white/40 text-muted-foreground" title={d.label}>
+              <div className="w-36 shrink-0 truncate text-sm dark:text-white/40 text-gray-500" title={d.label}>
                 {d.label}
               </div>
               <div className="flex-1">
-                <div className="relative h-7 rounded-md dark:bg-white/[0.04] bg-muted/50">
+                <div className="relative h-7 rounded-md dark:bg-white/[0.04] bg-gray-100">
                   <div
                     className={`absolute inset-y-0 left-0 rounded-md bg-gradient-to-r ${GRADIENT_COLORS[i % GRADIENT_COLORS.length]} transition-all duration-500`}
                     style={{
