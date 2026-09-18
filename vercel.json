@@ -1,14 +1,8 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "installCommand": "npm install && cd backend && pip install -r requirements.txt",
+  "installCommand": "npm install",
   "framework": "nextjs",
-  "functions": {
-    "backend/app/main.py": {
-      "runtime": "@vercel/python@4",
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
     {
       "source": "/api/:path*",
