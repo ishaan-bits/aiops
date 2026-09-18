@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppShell } from "@/components/layout/app-shell";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import "../styles/design-system.css";
 
 const inter = Inter({
   variable: "--font-inter",
