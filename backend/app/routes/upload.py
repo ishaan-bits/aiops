@@ -9,13 +9,12 @@ from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from ..schemas.upload import DocumentItem, UploadResponse
 from ..services.supabase_client import (
-    db_delete_document,
-    db_get_document,
-    db_insert_document,
-    db_list_documents,
-    get_documents_table_columns_via_rest,
-    storage_delete,
-    storage_upload,
+    create_document,
+    delete_document,
+    delete_storage_object,
+    get_document,
+    list_documents,
+    upload_document,
 )
 
 log = logging.getLogger(__name__)
@@ -28,9 +27,9 @@ DEV_MODE = os.getenv("ENVIRONMENT", "development") == "development"
 
 
 @router.get("/documents", response_model=list[DocumentItem])
-async def list_documents():
+async def get_documents():
     try:
-        rows = db_list_documents()
+        rows = list_documents()
     except Exception as e:
         log.exception("Failed to list documents")
         raise HTTPException(status_code=500, detail=f"Failed to load documents: {e}")
@@ -49,15 +48,8 @@ async def list_documents():
     ]
 
 
-@router.get("/documents/schema")
-async def get_documents_schema():
-    """Diagnostic endpoint: returns what PostgREST sees for the documents table."""
-    schema_info = get_documents_table_columns_via_rest()
-    return {"schema_probe": schema_info}
-
-
 @router.post("/documents/upload", response_model=UploadResponse)
-async def upload_document(file: UploadFile = File(...)):
+async def post_upload(file: UploadFile = File(...)):
     if not file.filename:
         raise HTTPException(status_code=400, detail="Filename is required")
 
@@ -74,54 +66,35 @@ async def upload_document(file: UploadFile = File(...)):
 
     # Step 1: Upload to Storage
     try:
-        storage_upload(file_bytes, storage_path, content_type)
-        log.info("Storage upload OK: %s (%d bytes)", storage_path, len(file_bytes))
+        upload_document(file_bytes, storage_path, content_type)
     except Exception as e:
         log.exception("Storage upload failed")
         raise HTTPException(status_code=500, detail=f"Storage upload failed: {e}")
 
-    # Step 2: Insert metadata into DB
+    # Step 2: Insert metadata — rollback storage on failure
     try:
-        doc = db_insert_document(
+        doc = create_document(
             filename=file.filename,
             storage_path=storage_path,
             file_size=len(file_bytes),
         )
     except Exception as insert_err:
-        # Roll back storage
         try:
-            storage_delete(storage_path)
-            log.info("Rolled back storage object: %s", storage_path)
-        except Exception as del_err:
-            log.error("Failed to roll back storage object %s: %s", storage_path, del_err)
-
-        tb_str = traceback.format_exc()
-        log.error("=== DOCUMENT INSERT FAILED ===")
-        log.error("Exception type: %s", type(insert_err).__name__)
-        log.error("Exception message: %s", insert_err)
-        log.error("Full traceback:\n%s", tb_str)
-
-        # Try to get schema info for debugging
-        try:
-            schema_info = get_documents_table_columns_via_rest()
-            log.error("PostgREST schema probe: %s", schema_info)
+            delete_storage_object(storage_path)
         except Exception:
-            pass
+            log.warning("Storage rollback failed for %s", storage_path)
+
+        tb = traceback.format_exc()
+        log.error("create_document FAILED: %s | %s\n%s", type(insert_err).__name__, insert_err, tb)
 
         detail = f"Failed to save document metadata: {insert_err}"
         if DEV_MODE:
             detail = {
                 "error": str(insert_err),
-                "error_type": type(insert_err).__name__,
-                "traceback": tb_str,
-                "payload_sent": {
-                    "filename": file.filename,
-                    "storage_path": storage_path,
-                    "file_size": len(file_bytes),
-                    "status": "uploaded",
-                },
+                "type": type(insert_err).__name__,
+                "traceback": tb,
+                "payload": {"filename": file.filename, "storage_path": storage_path, "file_size": len(file_bytes)},
             }
-
         raise HTTPException(status_code=500, detail=detail)
 
     return UploadResponse(
@@ -134,21 +107,19 @@ async def upload_document(file: UploadFile = File(...)):
 
 
 @router.delete("/documents/{doc_id}")
-async def delete_document(doc_id: int):
-    doc = db_get_document(doc_id)
+async def delete_doc(doc_id: int):
+    doc = get_document(doc_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
 
-    storage_path = doc.get("storage_path")
-
-    if storage_path:
+    if doc.get("storage_path"):
         try:
-            storage_delete(storage_path)
+            delete_storage_object(doc["storage_path"])
         except Exception:
             pass
 
     try:
-        db_delete_document(doc_id)
+        delete_document(doc_id)
     except Exception as e:
         log.exception("Failed to delete document %d", doc_id)
         raise HTTPException(status_code=500, detail=f"Failed to delete document metadata: {e}")

@@ -6,7 +6,7 @@ import sqlite3
 import tempfile
 from typing import List, Dict
 
-from .supabase_client import db_get_document, db_list_documents, db_update_document, storage_download
+from .supabase_client import get_document, list_documents, update_document, download_document
 
 INDEX_DIR = os.path.join(os.path.dirname(__file__), "..", "faiss_indexes")
 CHUNKS_DB = os.path.join(os.path.dirname(__file__), "..", "aiops_chunks.db")
@@ -40,8 +40,7 @@ def _get_chunks_db():
 
 
 def download_from_supabase(storage_path: str) -> str:
-    """Download a file from Supabase Storage to a temp path. Returns local path."""
-    file_bytes = storage_download(storage_path)
+    file_bytes = download_document(storage_path)
     tmp_dir = tempfile.mkdtemp()
     local_path = os.path.join(tmp_dir, os.path.basename(storage_path))
     with open(local_path, "wb") as f:
@@ -131,13 +130,13 @@ def save_to_faiss(document_id: int) -> int:
     with open(meta_path, "w") as f:
         json.dump({"chunk_ids": chunk_ids, "texts": texts}, f)
 
-    db_update_document(document_id, {"chunk_count": len(rows), "status": "indexed"})
+    update_document(document_id, {"chunk_count": len(rows), "status": "indexed"})
 
     return len(rows)
 
 
 def index_document(document_id: int) -> dict:
-    doc = db_get_document(document_id)
+    doc = get_document(document_id)
 
     if not doc:
         raise ValueError(f"Document {document_id} not found")
@@ -182,7 +181,7 @@ def search_similar(question: str, top_k: int = 5) -> List[Dict]:
     faiss.normalize_L2(q_embedding)
 
     results = []
-    docs = [d for d in db_list_documents() if d.get("status") == "indexed"]
+    docs = [d for d in list_documents() if d.get("status") == "indexed"]
 
     for doc in docs:
         doc_id = doc["id"]
