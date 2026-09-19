@@ -1,29 +1,30 @@
-import os
-import shutil
+from fastapi import APIRouter, HTTPException
 
-from fastapi import APIRouter, UploadFile
-
-from ..schemas.upload import UploadResponse
+from ..schemas.upload import UploadRequest, UploadResponse
 from ..services.rag import register_document
 
 router = APIRouter()
 
-UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
 
 @router.post("/upload", response_model=UploadResponse)
-async def upload_file(file: UploadFile):
-    file_path = os.path.join(UPLOAD_DIR, file.filename)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+async def upload_file(request: UploadRequest):
+    if not request.filename.strip():
+        raise HTTPException(status_code=400, detail="Filename cannot be empty")
+    if not request.storage_path.strip():
+        raise HTTPException(status_code=400, detail="Storage path cannot be empty")
 
-    file_size = os.path.getsize(file_path)
-    document_id = register_document(file.filename, file_path)
+    try:
+        document_id = register_document(
+            filename=request.filename,
+            storage_path=request.storage_path,
+            size=request.size,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to register document: {str(e)}")
 
     return UploadResponse(
-        filename=file.filename,
-        size=file_size,
+        filename=request.filename,
+        size=request.size,
         status="uploaded",
         document_id=document_id,
     )

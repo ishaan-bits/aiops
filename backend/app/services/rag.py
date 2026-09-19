@@ -1,18 +1,26 @@
 from __future__ import annotations
 
-import os
 import json
+import os
 import sqlite3
-from typing import List, Dict, Tuple
+import tempfile
+import urllib.request
+import urllib.error
+from typing import List, Dict
 
 import faiss
 import numpy as np
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "aiops.db")
 INDEX_DIR = os.path.join(os.path.dirname(__file__), "..", "faiss_indexes")
-UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "..", "uploads")
 
 _model = None
+
+SUPABASE_BUCKET = "documents"
+
+
+def _get_supabase_config():
+    return os.getenv("SUPABASE_URL", ""), os.getenv("SUPABASE_SERVICE_KEY", "")
 
 
 def _get_model():
@@ -31,16 +39,52 @@ def get_db():
 
 def init_rag_db():
     conn = get_db()
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS rag_documents (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            filename TEXT NOT NULL,
-            file_path TEXT NOT NULL,
-            chunk_count INTEGER DEFAULT 0,
-            status TEXT DEFAULT 'uploaded',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+
+    # Check if old schema has file_path column (without storage_path)
+    has_storage = False
+    has_file_path = False
+    try:
+        cols = [r[1] for r in conn.execute("PRAGMA table_info(rag_documents)").fetchall()]
+        has_storage = "storage_path" in cols
+        has_file_path = "file_path" in cols
+    except Exception:
+        pass
+
+    # Recreate if legacy file_path column exists (NOT NULL without default breaks new inserts)
+    if has_file_path:
+        conn.execute("DROP TABLE IF EXISTS rag_documents_new")
+        conn.execute("""
+            CREATE TABLE rag_documents_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                filename TEXT NOT NULL,
+                storage_path TEXT NOT NULL DEFAULT '',
+                file_size INTEGER DEFAULT 0,
+                chunk_count INTEGER DEFAULT 0,
+                status TEXT DEFAULT 'uploaded',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        try:
+            conn.execute(
+                "INSERT INTO rag_documents_new (id, filename, storage_path, file_size, chunk_count, status, created_at) "
+                "SELECT id, filename, COALESCE(storage_path, ''), COALESCE(file_size, 0), chunk_count, status, created_at FROM rag_documents"
+            )
+        except Exception:
+            pass
+        conn.execute("DROP TABLE rag_documents")
+        conn.execute("ALTER TABLE rag_documents_new RENAME TO rag_documents")
+    else:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS rag_documents (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                filename TEXT NOT NULL,
+                storage_path TEXT NOT NULL DEFAULT '',
+                file_size INTEGER DEFAULT 0,
+                chunk_count INTEGER DEFAULT 0,
+                status TEXT DEFAULT 'uploaded',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS rag_chunks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,16 +99,49 @@ def init_rag_db():
     conn.close()
 
 
-def register_document(filename: str, file_path: str) -> int:
+def register_document(filename: str, storage_path: str, size: int = 0) -> int:
     conn = get_db()
     cursor = conn.execute(
-        "INSERT INTO rag_documents (filename, file_path, status) VALUES (?, ?, 'uploaded')",
-        (filename, file_path),
+        "INSERT INTO rag_documents (filename, storage_path, file_size, status) VALUES (?, ?, ?, 'uploaded')",
+        (filename, storage_path, size),
     )
     doc_id = cursor.lastrowid
     conn.commit()
     conn.close()
     return doc_id
+
+
+def download_from_supabase(storage_path: str) -> str:
+    """Download a file from Supabase Storage to a temp path. Returns local path."""
+    supabase_url, service_key = _get_supabase_config()
+    if not supabase_url or not service_key:
+        raise RuntimeError(
+            "Supabase credentials not configured. "
+            "Set SUPABASE_URL and SUPABASE_SERVICE_KEY in backend/.env"
+        )
+
+    url = f"{supabase_url}/storage/v1/object/{SUPABASE_BUCKET}/{storage_path}"
+
+    tmp_dir = tempfile.mkdtemp()
+    local_path = os.path.join(tmp_dir, os.path.basename(storage_path))
+
+    req = urllib.request.Request(url)
+    req.add_header("Authorization", f"Bearer {service_key}")
+    req.add_header("apikey", service_key)
+
+    try:
+        with urllib.request.urlopen(req) as response:
+            with open(local_path, "wb") as f:
+                f.write(response.read())
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(
+            f"Failed to download '{storage_path}' from Supabase: "
+            f"HTTP {e.code} {e.reason}"
+        )
+    except urllib.error.URLError as e:
+        raise RuntimeError(f"Failed to connect to Supabase: {e.reason}")
+
+    return local_path
 
 
 def extract_text(file_path: str) -> List[Dict]:
@@ -160,13 +237,28 @@ def save_to_faiss(document_id: int) -> int:
 
 def index_document(document_id: int) -> dict:
     conn = get_db()
-    doc = conn.execute("SELECT file_path, filename FROM rag_documents WHERE id = ?", (document_id,)).fetchone()
+    doc = conn.execute(
+        "SELECT storage_path, filename FROM rag_documents WHERE id = ?",
+        (document_id,),
+    ).fetchone()
     conn.close()
 
     if not doc:
         raise ValueError(f"Document {document_id} not found")
 
-    pages = extract_text(doc["file_path"])
+    storage_path = doc["storage_path"]
+    local_path = None
+
+    try:
+        local_path = download_from_supabase(storage_path)
+        pages = extract_text(local_path)
+    finally:
+        if local_path and os.path.exists(local_path):
+            os.remove(local_path)
+            parent = os.path.dirname(local_path)
+            if parent and os.path.isdir(parent) and not os.listdir(parent):
+                os.rmdir(parent)
+
     total_chunks = 0
     conn = get_db()
 

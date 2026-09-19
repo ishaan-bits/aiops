@@ -1,13 +1,15 @@
 /*
  * Design System — Component Styles
  *
- * This file contains all reusable component styles.
- * It MUST be imported AFTER globals.css in layout.tsx.
+ * This file is imported from globals.css via CSS @import.
+ * It MUST NOT be imported directly in layout.tsx — separate CSS
+ * files with @layer create independent cascade layer stacks
+ * that break Tailwind utility classes.
  *
- * Rules:
- * - All styles live inside @layer base so Tailwind utilities can override them
- * - No CSS variables defined here (those belong in globals.css)
- * - No Tailwind @theme or @custom-variant directives here
+ * Import chain: globals.css → @import "../styles/design-system.css"
+ *
+ * All styles live inside @layer base so Tailwind utilities can override them.
+ * No CSS variables defined here (those belong in globals.css).
  */
 
 @layer base {

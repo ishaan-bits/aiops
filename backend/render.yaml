@@ -8,11 +8,11 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.11"
-      - key: CORS_ORIGINS
-        sync: false
-      - key: OLLAMA_URL
-        sync: false
       - key: SUPABASE_URL
-        sync: false
+        value: https://pjocwiwsbfarikzqpkbs.supabase.co
       - key: SUPABASE_SERVICE_KEY
-        sync: false
+        generateValue: false
+      - key: CORS_ORIGINS
+        value: '["http://localhost:3000"]'
+      - key: OLLAMA_URL
+        value: ""

@@ -1,3 +1,5 @@
+import { getSupabase } from "@/lib/supabase";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export interface UploadResponse {
@@ -8,12 +10,30 @@ export interface UploadResponse {
 }
 
 export async function uploadDocument(file: File): Promise<UploadResponse> {
-  const formData = new FormData();
-  formData.append("file", file);
+  const ext = file.name.split(".").pop() || "bin";
+  const uuid = crypto.randomUUID();
+  const storagePath = `${uuid}.${ext}`;
+
+  const { error: uploadError } = await getSupabase()
+    .storage
+    .from("documents")
+    .upload(storagePath, file, {
+      contentType: file.type || "application/octet-stream",
+      upsert: false,
+    });
+
+  if (uploadError) {
+    throw new Error(`Supabase upload failed: ${uploadError.message}`);
+  }
 
   const res = await fetch(`${API_BASE_URL}/upload`, {
     method: "POST",
-    body: formData,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      filename: file.name,
+      storage_path: storagePath,
+      size: file.size,
+    }),
   });
 
   if (!res.ok) {

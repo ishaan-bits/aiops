@@ -1,6 +1,12 @@
 from pydantic import BaseModel
 
 
+class UploadRequest(BaseModel):
+    filename: str
+    storage_path: str
+    size: int
+
+
 class UploadResponse(BaseModel):
     filename: str
     size: int
