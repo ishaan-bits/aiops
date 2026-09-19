@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { toast, Toaster } from "sonner";
 import {
@@ -16,7 +16,7 @@ import {
   Loader2,
   Sparkles,
 } from "lucide-react";
-import { uploadDocument } from "@/services/api";
+import { uploadDocument, fetchDocuments, DocumentItem } from "@/services/api";
 import { indexDocument } from "@/services/rag";
 import { AskAI } from "@/components/knowledge/ask-ai";
 
@@ -24,8 +24,9 @@ interface Document {
   name: string;
   size: string;
   date: string;
-  status: "indexed";
+  status: "indexed" | "uploaded";
   tag: string;
+  id: number;
 }
 
 interface RecentRow {
@@ -33,25 +34,8 @@ interface RecentRow {
   size: string;
   uploadedBy: string;
   time: string;
-  status: "indexed";
+  status: "indexed" | "uploaded";
 }
-
-const initialDocuments: Document[] = [
-  { name: "Vendor_Contract.pdf", size: "2.4 MB", date: "Dec 10, 2024", status: "indexed", tag: "contracts" },
-  { name: "Employee_Handbook.pdf", size: "5.1 MB", date: "Dec 8, 2024", status: "indexed", tag: "pdf" },
-  { name: "Q2_Invoice_048.pdf", size: "890 KB", date: "Dec 7, 2024", status: "indexed", tag: "invoices" },
-  { name: "SOP_Logistics.pdf", size: "1.7 MB", date: "Dec 5, 2024", status: "indexed", tag: "sop" },
-  { name: "Purchase_Order_231.pdf", size: "420 KB", date: "Dec 3, 2024", status: "indexed", tag: "invoices" },
-  { name: "Compliance_Report.pdf", size: "3.3 MB", date: "Dec 1, 2024", status: "indexed", tag: "pdf" },
-];
-
-const initialRecentlyUploaded: RecentRow[] = [
-  { name: "Compliance_Report.pdf", size: "3.3 MB", uploadedBy: "Sarah Chen", time: "2 hours ago", status: "indexed" },
-  { name: "Purchase_Order_231.pdf", size: "420 KB", uploadedBy: "James Wilson", time: "5 hours ago", status: "indexed" },
-  { name: "SOP_Logistics.pdf", size: "1.7 MB", uploadedBy: "Maria Garcia", time: "1 day ago", status: "indexed" },
-  { name: "Q2_Invoice_048.pdf", size: "890 KB", uploadedBy: "Alex Kim", time: "2 days ago", status: "indexed" },
-  { name: "Employee_Handbook.pdf", size: "5.1 MB", uploadedBy: "Sarah Chen", time: "3 days ago", status: "indexed" },
-];
 
 const filters = ["All", "PDF", "Contracts", "Invoices", "SOP"];
 
@@ -69,17 +53,57 @@ function getTag(filename: string): string {
   return "pdf";
 }
 
+function apiDocToDoc(d: DocumentItem): Document {
+  const date = d.created_at
+    ? new Date(d.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    : "Unknown";
+  return {
+    name: d.filename,
+    size: formatFileSize(d.file_size),
+    date,
+    status: d.status === "indexed" ? "indexed" : "uploaded",
+    tag: getTag(d.filename),
+    id: d.id,
+  };
+}
+
 export default function KnowledgePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
   const [isDragOver, setIsDragOver] = useState(false);
-  const [documents, setDocuments] = useState<Document[]>(initialDocuments);
-  const [recentlyUploaded, setRecentlyUploaded] = useState<RecentRow[]>(initialRecentlyUploaded);
-  const [totalDocs, setTotalDocs] = useState(248);
-  const [indexedDocs, setIndexedDocs] = useState(241);
-  const [storageUsed, setStorageUsed] = useState(1.2);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [recentlyUploaded, setRecentlyUploaded] = useState<RecentRow[]>([]);
+  const [totalDocs, setTotalDocs] = useState(0);
+  const [indexedDocs, setIndexedDocs] = useState(0);
+  const [storageUsed, setStorageUsed] = useState(0);
   const [showAskAI, setShowAskAI] = useState(false);
+
+  useEffect(() => {
+    loadDocuments();
+  }, []);
+
+  async function loadDocuments() {
+    try {
+      const items = await fetchDocuments();
+      const docs = items.map(apiDocToDoc);
+      setDocuments(docs);
+      setTotalDocs(items.length);
+      setIndexedDocs(items.filter((d) => d.status === "indexed").length);
+      setStorageUsed(items.reduce((sum, d) => sum + d.file_size, 0) / (1024 * 1024 * 1024));
+      setRecentlyUploaded(
+        docs.slice(0, 5).map((d) => ({
+          name: d.name,
+          size: d.size,
+          uploadedBy: "You",
+          time: d.date,
+          status: d.status,
+        }))
+      );
+    } catch {
+      toast.error("Failed to load documents");
+    }
+  }
 
   const filteredDocuments = documents.filter((doc) => {
     if (activeFilter === "All") return true;
@@ -101,8 +125,9 @@ export default function KnowledgePage() {
         name: result.filename,
         size: formatFileSize(result.size),
         date: dateStr,
-        status: "indexed",
+        status: "uploaded",
         tag: getTag(result.filename),
+        id: result.document_id,
       };
 
       const newRecent: RecentRow = {
@@ -110,7 +135,7 @@ export default function KnowledgePage() {
         size: formatFileSize(result.size),
         uploadedBy: "You",
         time: "Just now",
-        status: "indexed",
+        status: "uploaded",
       };
 
       setDocuments((prev) => [newDoc, ...prev]);
@@ -126,6 +151,7 @@ export default function KnowledgePage() {
         try {
           await indexDocument(result.document_id);
           toast.success(`${result.filename} indexed for AI search`);
+          loadDocuments();
         } catch {
           toast.warning("Upload succeeded but indexing failed. You can retry later.");
         }
@@ -310,10 +336,17 @@ export default function KnowledgePage() {
                   </p>
                 </div>
                 <div className="mt-3">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
-                    <CheckCircle2 className="h-3 w-3" />
-                    Indexed
-                  </span>
+                  {doc.status === "indexed" ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
+                      <CheckCircle2 className="h-3 w-3" />
+                      Indexed
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium dark:text-amber-400 text-amber-600">
+                      <Clock className="h-3 w-3" />
+                      Uploaded
+                    </span>
+                  )}
                 </div>
               </motion.div>
             ))}

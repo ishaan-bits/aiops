@@ -14,6 +14,15 @@ class UploadResponse(BaseModel):
     document_id: int = 0
 
 
+class DocumentItem(BaseModel):
+    id: int
+    filename: str
+    storage_path: str
+    file_size: int
+    status: str
+    created_at: str
+
+
 class HealthResponse(BaseModel):
     status: str
     version: str

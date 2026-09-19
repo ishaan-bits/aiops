@@ -1,9 +1,29 @@
 from fastapi import APIRouter, HTTPException
 
-from ..schemas.upload import UploadRequest, UploadResponse
-from ..services.rag import register_document
+from ..schemas.upload import DocumentItem, UploadRequest, UploadResponse
+from ..services.rag import get_db, register_document
 
 router = APIRouter()
+
+
+@router.get("/documents", response_model=list[DocumentItem])
+async def list_documents():
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT id, filename, storage_path, file_size, status, created_at FROM rag_documents ORDER BY id DESC"
+    ).fetchall()
+    conn.close()
+    return [
+        DocumentItem(
+            id=r["id"],
+            filename=r["filename"],
+            storage_path=r["storage_path"],
+            file_size=r["file_size"],
+            status=r["status"],
+            created_at=r["created_at"] or "",
+        )
+        for r in rows
+    ]
 
 
 @router.post("/upload", response_model=UploadResponse)

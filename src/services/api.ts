@@ -9,6 +9,24 @@ export interface UploadResponse {
   document_id: number;
 }
 
+export interface DocumentItem {
+  id: number;
+  filename: string;
+  storage_path: string;
+  file_size: number;
+  status: string;
+  created_at: string;
+}
+
+export async function fetchDocuments(): Promise<DocumentItem[]> {
+  const res = await fetch(`${API_BASE_URL}/documents`);
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: "Failed to load documents" }));
+    throw new Error(error.detail || "Failed to load documents");
+  }
+  return res.json();
+}
+
 export async function uploadDocument(file: File): Promise<UploadResponse> {
   const ext = file.name.split(".").pop() || "bin";
   const uuid = crypto.randomUUID();
