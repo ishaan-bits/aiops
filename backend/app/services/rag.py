@@ -8,9 +8,6 @@ import urllib.request
 import urllib.error
 from typing import List, Dict
 
-import faiss
-import numpy as np
-
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "aiops.db")
 INDEX_DIR = os.path.join(os.path.dirname(__file__), "..", "faiss_indexes")
 
@@ -189,13 +186,15 @@ def chunk_text(text: str, chunk_size: int = 500, overlap: int = 75) -> List[str]
     return chunks
 
 
-def create_embeddings(chunks: List[str]) -> np.ndarray:
+def create_embeddings(chunks: List[str]):
+    import numpy as np
     model = _get_model()
     embeddings = model.encode(chunks, show_progress_bar=False, convert_to_numpy=True)
     return embeddings.astype(np.float32)
 
 
 def save_to_faiss(document_id: int) -> int:
+    import faiss
     conn = get_db()
     rows = conn.execute(
         "SELECT id, content, page_number FROM rag_chunks WHERE document_id = ? ORDER BY chunk_index",
@@ -279,6 +278,8 @@ def index_document(document_id: int) -> dict:
 
 
 def search_similar(question: str, top_k: int = 5) -> List[Dict]:
+    import faiss
+    import numpy as np
     model = _get_model()
     q_embedding = model.encode([question], convert_to_numpy=True).astype(np.float32)
     faiss.normalize_L2(q_embedding)
