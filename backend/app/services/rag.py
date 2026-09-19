@@ -6,10 +6,12 @@ import sqlite3
 import tempfile
 import urllib.request
 import urllib.error
-from typing import List, Dict
+from typing import List, Dict, Optional
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "..", "aiops.db")
+from .db import db_register_document, db_list_documents, db_get_document, db_update_document
+
 INDEX_DIR = os.path.join(os.path.dirname(__file__), "..", "faiss_indexes")
+CHUNKS_DB = os.path.join(os.path.dirname(__file__), "..", "aiops_chunks.db")
 
 _model = None
 
@@ -28,60 +30,9 @@ def _get_model():
     return _model
 
 
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
+def _get_chunks_db():
+    conn = sqlite3.connect(CHUNKS_DB)
     conn.row_factory = sqlite3.Row
-    return conn
-
-
-def init_rag_db():
-    conn = get_db()
-
-    # Check if old schema has file_path column (without storage_path)
-    has_storage = False
-    has_file_path = False
-    try:
-        cols = [r[1] for r in conn.execute("PRAGMA table_info(rag_documents)").fetchall()]
-        has_storage = "storage_path" in cols
-        has_file_path = "file_path" in cols
-    except Exception:
-        pass
-
-    # Recreate if legacy file_path column exists (NOT NULL without default breaks new inserts)
-    if has_file_path:
-        conn.execute("DROP TABLE IF EXISTS rag_documents_new")
-        conn.execute("""
-            CREATE TABLE rag_documents_new (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                filename TEXT NOT NULL,
-                storage_path TEXT NOT NULL DEFAULT '',
-                file_size INTEGER DEFAULT 0,
-                chunk_count INTEGER DEFAULT 0,
-                status TEXT DEFAULT 'uploaded',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        try:
-            conn.execute(
-                "INSERT INTO rag_documents_new (id, filename, storage_path, file_size, chunk_count, status, created_at) "
-                "SELECT id, filename, COALESCE(storage_path, ''), COALESCE(file_size, 0), chunk_count, status, created_at FROM rag_documents"
-            )
-        except Exception:
-            pass
-        conn.execute("DROP TABLE rag_documents")
-        conn.execute("ALTER TABLE rag_documents_new RENAME TO rag_documents")
-    else:
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS rag_documents (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                filename TEXT NOT NULL,
-                storage_path TEXT NOT NULL DEFAULT '',
-                file_size INTEGER DEFAULT 0,
-                chunk_count INTEGER DEFAULT 0,
-                status TEXT DEFAULT 'uploaded',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS rag_chunks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,23 +40,19 @@ def init_rag_db():
             chunk_index INTEGER NOT NULL,
             content TEXT NOT NULL,
             page_number INTEGER DEFAULT 1,
-            FOREIGN KEY (document_id) REFERENCES rag_documents(id)
+            FOREIGN KEY (document_id) REFERENCES rag_chunks(document_id)
         )
     """)
     conn.commit()
-    conn.close()
+    return conn
 
 
 def register_document(filename: str, storage_path: str, size: int = 0) -> int:
-    conn = get_db()
-    cursor = conn.execute(
-        "INSERT INTO rag_documents (filename, storage_path, file_size, status) VALUES (?, ?, ?, 'uploaded')",
-        (filename, storage_path, size),
-    )
-    doc_id = cursor.lastrowid
-    conn.commit()
-    conn.close()
-    return doc_id
+    return db_register_document(filename, storage_path, size)
+
+
+def list_documents() -> List[Dict]:
+    return db_list_documents()
 
 
 def download_from_supabase(storage_path: str) -> str:
@@ -195,7 +142,7 @@ def create_embeddings(chunks: List[str]):
 
 def save_to_faiss(document_id: int) -> int:
     import faiss
-    conn = get_db()
+    conn = _get_chunks_db()
     rows = conn.execute(
         "SELECT id, content, page_number FROM rag_chunks WHERE document_id = ? ORDER BY chunk_index",
         (document_id,),
@@ -223,24 +170,13 @@ def save_to_faiss(document_id: int) -> int:
     with open(meta_path, "w") as f:
         json.dump({"chunk_ids": chunk_ids, "texts": texts}, f)
 
-    conn = get_db()
-    conn.execute(
-        "UPDATE rag_documents SET chunk_count = ?, status = 'indexed' WHERE id = ?",
-        (len(rows), document_id),
-    )
-    conn.commit()
-    conn.close()
+    db_update_document(document_id, {"chunk_count": len(rows), "status": "indexed"})
 
     return len(rows)
 
 
 def index_document(document_id: int) -> dict:
-    conn = get_db()
-    doc = conn.execute(
-        "SELECT storage_path, filename FROM rag_documents WHERE id = ?",
-        (document_id,),
-    ).fetchone()
-    conn.close()
+    doc = db_get_document(document_id)
 
     if not doc:
         raise ValueError(f"Document {document_id} not found")
@@ -259,7 +195,7 @@ def index_document(document_id: int) -> dict:
                 os.rmdir(parent)
 
     total_chunks = 0
-    conn = get_db()
+    conn = _get_chunks_db()
 
     for page_data in pages:
         chunks = chunk_text(page_data["text"])
@@ -285,13 +221,12 @@ def search_similar(question: str, top_k: int = 5) -> List[Dict]:
     faiss.normalize_L2(q_embedding)
 
     results = []
-    conn = get_db()
-    docs = conn.execute("SELECT id, filename FROM rag_documents WHERE status = 'indexed'").fetchall()
-    conn.close()
+    docs = [d for d in db_list_documents() if d.get("status") == "indexed"]
 
     for doc in docs:
-        index_path = os.path.join(INDEX_DIR, f"doc_{doc['id']}.faiss")
-        meta_path = os.path.join(INDEX_DIR, f"doc_{doc['id']}_meta.json")
+        doc_id = doc["id"]
+        index_path = os.path.join(INDEX_DIR, f"doc_{doc_id}.faiss")
+        meta_path = os.path.join(INDEX_DIR, f"doc_{doc_id}_meta.json")
         if not os.path.exists(index_path):
             continue
 
@@ -304,11 +239,11 @@ def search_similar(question: str, top_k: int = 5) -> List[Dict]:
             if idx < 0:
                 continue
             chunk_id = meta["chunk_ids"][idx]
-            conn2 = get_db()
-            chunk_row = conn2.execute(
+            conn = _get_chunks_db()
+            chunk_row = conn.execute(
                 "SELECT content, page_number FROM rag_chunks WHERE id = ?", (chunk_id,)
             ).fetchone()
-            conn2.close()
+            conn.close()
             if chunk_row:
                 results.append({
                     "document": doc["filename"],
@@ -352,6 +287,3 @@ def generate_answer(question: str) -> dict:
         "answer": answer_text,
         "sources": [{"document": s["document"], "page": s["page"], "score": s["score"]} for s in sources],
     }
-
-
-init_rag_db()

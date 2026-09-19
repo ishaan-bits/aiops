@@ -1,18 +1,14 @@
 from fastapi import APIRouter, HTTPException
 
 from ..schemas.upload import DocumentItem, UploadRequest, UploadResponse
-from ..services.rag import get_db, register_document
+from ..services.rag import register_document, list_documents
 
 router = APIRouter()
 
 
 @router.get("/documents", response_model=list[DocumentItem])
-async def list_documents():
-    conn = get_db()
-    rows = conn.execute(
-        "SELECT id, filename, storage_path, file_size, status, created_at FROM rag_documents ORDER BY id DESC"
-    ).fetchall()
-    conn.close()
+async def get_documents():
+    rows = list_documents()
     return [
         DocumentItem(
             id=r["id"],
@@ -20,7 +16,7 @@ async def list_documents():
             storage_path=r["storage_path"],
             file_size=r["file_size"],
             status=r["status"],
-            created_at=r["created_at"] or "",
+            created_at=r.get("created_at", ""),
         )
         for r in rows
     ]
