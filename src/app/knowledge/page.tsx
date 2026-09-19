@@ -123,16 +123,16 @@ export default function KnowledgePage() {
 
       const newDoc: Document = {
         name: result.filename,
-        size: formatFileSize(result.size),
+        size: formatFileSize(result.file_size),
         date: dateStr,
         status: "uploaded",
         tag: getTag(result.filename),
-        id: result.document_id,
+        id: result.id,
       };
 
       const newRecent: RecentRow = {
         name: result.filename,
-        size: formatFileSize(result.size),
+        size: formatFileSize(result.file_size),
         uploadedBy: "You",
         time: "Just now",
         status: "uploaded",
@@ -141,15 +141,14 @@ export default function KnowledgePage() {
       setDocuments((prev) => [newDoc, ...prev]);
       setRecentlyUploaded((prev) => [newRecent, ...prev]);
       setTotalDocs((prev) => prev + 1);
-      setIndexedDocs((prev) => prev + 1);
-      setStorageUsed((prev) => prev + result.size / (1024 * 1024 * 1024));
+      setStorageUsed((prev) => prev + result.file_size / (1024 * 1024 * 1024));
 
       toast.success(`${result.filename} uploaded successfully`);
 
-      if (result.document_id) {
+      if (result.id) {
         toast.info("Indexing document for AI search...");
         try {
-          await indexDocument(result.document_id);
+          await indexDocument(result.id);
           toast.success(`${result.filename} indexed for AI search`);
           loadDocuments();
         } catch {

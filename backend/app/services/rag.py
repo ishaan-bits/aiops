@@ -4,22 +4,14 @@ import json
 import os
 import sqlite3
 import tempfile
-import urllib.request
-import urllib.error
-from typing import List, Dict, Optional
+from typing import List, Dict
 
-from .db import db_register_document, db_list_documents, db_get_document, db_update_document
+from .supabase_client import db_get_document, db_list_documents, db_update_document, storage_download
 
 INDEX_DIR = os.path.join(os.path.dirname(__file__), "..", "faiss_indexes")
 CHUNKS_DB = os.path.join(os.path.dirname(__file__), "..", "aiops_chunks.db")
 
 _model = None
-
-SUPABASE_BUCKET = "documents"
-
-
-def _get_supabase_config():
-    return os.getenv("SUPABASE_URL", ""), os.getenv("SUPABASE_SERVICE_KEY", "")
 
 
 def _get_model():
@@ -47,44 +39,13 @@ def _get_chunks_db():
     return conn
 
 
-def register_document(filename: str, storage_path: str, size: int = 0) -> int:
-    return db_register_document(filename, storage_path, size)
-
-
-def list_documents() -> List[Dict]:
-    return db_list_documents()
-
-
 def download_from_supabase(storage_path: str) -> str:
     """Download a file from Supabase Storage to a temp path. Returns local path."""
-    supabase_url, service_key = _get_supabase_config()
-    if not supabase_url or not service_key:
-        raise RuntimeError(
-            "Supabase credentials not configured. "
-            "Set SUPABASE_URL and SUPABASE_SERVICE_KEY in backend/.env"
-        )
-
-    url = f"{supabase_url}/storage/v1/object/{SUPABASE_BUCKET}/{storage_path}"
-
+    file_bytes = storage_download(storage_path)
     tmp_dir = tempfile.mkdtemp()
     local_path = os.path.join(tmp_dir, os.path.basename(storage_path))
-
-    req = urllib.request.Request(url)
-    req.add_header("Authorization", f"Bearer {service_key}")
-    req.add_header("apikey", service_key)
-
-    try:
-        with urllib.request.urlopen(req) as response:
-            with open(local_path, "wb") as f:
-                f.write(response.read())
-    except urllib.error.HTTPError as e:
-        raise RuntimeError(
-            f"Failed to download '{storage_path}' from Supabase: "
-            f"HTTP {e.code} {e.reason}"
-        )
-    except urllib.error.URLError as e:
-        raise RuntimeError(f"Failed to connect to Supabase: {e.reason}")
-
+    with open(local_path, "wb") as f:
+        f.write(file_bytes)
     return local_path
 
 
