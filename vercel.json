@@ -2,31 +2,5 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "installCommand": "npm install",
-  "framework": "nextjs",
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://aiops-api.vercel.app/api/:path*"
-    },
-    {
-      "source": "/health",
-      "destination": "https://aiops-api.vercel.app/health"
-    },
-    {
-      "source": "/upload",
-      "destination": "https://aiops-api.vercel.app/upload"
-    },
-    {
-      "source": "/sql/:path*",
-      "destination": "https://aiops-api.vercel.app/sql/:path*"
-    },
-    {
-      "source": "/rag/:path*",
-      "destination": "https://aiops-api.vercel.app/rag/:path*"
-    },
-    {
-      "source": "/reports/:path*",
-      "destination": "https://aiops-api.vercel.app/reports/:path*"
-    }
-  ]
+  "framework": "nextjs"
 }
