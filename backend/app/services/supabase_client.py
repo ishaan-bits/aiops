@@ -18,7 +18,7 @@ SUPABASE_BUCKET = "documents"
 def _get_config():
     return (
         os.getenv("SUPABASE_URL", ""),
-        os.getenv("SUPABASE_SERVICE_ROLE_KEY", ""),
+        os.getenv("SUPABASE_SERVICE_KEY", ""),
     )
 
 
@@ -27,7 +27,7 @@ def _rest_request(
 ) -> Any:
     url, key = _get_config()
     if not url or not key:
-        raise RuntimeError("Supabase credentials not configured (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY)")
+        raise RuntimeError("Supabase credentials not configured (SUPABASE_URL / SUPABASE_SERVICE_KEY)")
 
     full_url = f"{url}/rest/v1/{path}"
     if params:
