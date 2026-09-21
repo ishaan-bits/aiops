@@ -1,7 +1,7 @@
-"""Supabase admin client — service-role key only.
+"""Supabase client — Storage (REST) + Database (direct PostgreSQL).
 
-All Storage + PostgreSQL operations go through this module.
-No Python SDK dependency — stdlib urllib only.
+Storage uses HTTP against the Supabase Storage REST API.
+Database uses psycopg2 direct connection — bypasses PostgREST and RLS entirely.
 """
 from __future__ import annotations
 
@@ -16,51 +16,28 @@ log = logging.getLogger(__name__)
 
 SUPABASE_BUCKET = "documents"
 
+# ── Config ───────────────────────────────────────────────────────────────
 
-def _get_config() -> tuple[str, str]:
+def _get_storage_config() -> tuple[str, str]:
     return (
         os.getenv("SUPABASE_URL", ""),
-        os.getenv("SUPABASE_KEY", "") or os.getenv("SUPABASE_SERVICE_KEY", ""),
+        os.getenv("SUPABASE_SERVICE_KEY", ""),
     )
 
 
-def _rest_request(
-    method: str,
-    path: str,
-    body: Any = None,
-    params: str = "",
-) -> Any:
-    url, key = _get_config()
+def _get_db_config() -> str:
+    """Return the direct PostgreSQL connection string."""
+    return os.getenv("SUPABASE_DB_URL", "")
+
+
+# ── Storage (HTTP REST) ─────────────────────────────────────────────────
+
+def storage_upload(file_bytes: bytes, storage_path: str, content_type: str = "application/octet-stream") -> None:
+    url, key = _get_storage_config()
     if not url or not key:
-        raise RuntimeError("Supabase credentials not configured (SUPABASE_URL / SUPABASE_SERVICE_KEY)")
+        raise RuntimeError("Supabase Storage not configured (SUPABASE_URL / SUPABASE_SERVICE_KEY)")
 
-    full_url = f"{url}/rest/v1/{path}"
-    if params:
-        full_url += f"?{params}"
-
-    data = json.dumps(body).encode() if body else None
-    req = urllib.request.Request(full_url, data=data, method=method)
-    req.add_header("apikey", key)
-    req.add_header("Authorization", f"Bearer {key}")
-    req.add_header("Content-Type", "application/json")
-    req.add_header("Prefer", "return=representation")
-
-    try:
-        with urllib.request.urlopen(req) as resp:
-            raw = resp.read().decode()
-            return json.loads(raw) if raw else []
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode()
-        log.error("Supabase REST %s %s -> %d: %s", method, full_url, e.code, err_body[:500])
-        raise RuntimeError(f"Supabase REST error {e.code}: {err_body[:500]}")
-
-
-# ── Storage ──────────────────────────────────────────────────────────────
-
-def upload_document(file_bytes: bytes, storage_path: str, content_type: str = "application/octet-stream") -> None:
-    url, key = _get_config()
     upload_url = f"{url}/storage/v1/object/{SUPABASE_BUCKET}/{storage_path}"
-
     req = urllib.request.Request(upload_url, data=file_bytes, method="POST")
     req.add_header("apikey", key)
     req.add_header("Authorization", f"Bearer {key}")
@@ -71,14 +48,36 @@ def upload_document(file_bytes: bytes, storage_path: str, content_type: str = "a
         with urllib.request.urlopen(req) as resp:
             resp.read()
     except urllib.error.HTTPError as e:
-        err_body = e.read().decode()
-        raise RuntimeError(f"Storage upload failed ({e.code}): {err_body[:500]}")
+        err = e.read().decode()
+        raise RuntimeError(f"Storage upload failed ({e.code}): {err[:500]}")
 
 
-def download_document(storage_path: str) -> bytes:
-    url, key = _get_config()
+def storage_delete(storage_path: str) -> None:
+    url, key = _get_storage_config()
+    if not url or not key:
+        return
+
+    delete_url = f"{url}/storage/v1/object/{SUPABASE_BUCKET}/{storage_path}"
+    req = urllib.request.Request(delete_url, method="DELETE")
+    req.add_header("apikey", key)
+    req.add_header("Authorization", f"Bearer {key}")
+
+    try:
+        with urllib.request.urlopen(req) as resp:
+            resp.read()
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return
+        err = e.read().decode()
+        raise RuntimeError(f"Storage delete failed ({e.code}): {err[:500]}")
+
+
+def storage_download(storage_path: str) -> bytes:
+    url, key = _get_storage_config()
+    if not url or not key:
+        raise RuntimeError("Supabase Storage not configured")
+
     download_url = f"{url}/storage/v1/object/{SUPABASE_BUCKET}/{storage_path}"
-
     req = urllib.request.Request(download_url)
     req.add_header("apikey", key)
     req.add_header("Authorization", f"Bearer {key}")
@@ -90,51 +89,90 @@ def download_document(storage_path: str) -> bytes:
         raise RuntimeError(f"Storage download failed ({e.code}): {storage_path}")
 
 
-def delete_storage_object(storage_path: str) -> None:
-    url, key = _get_config()
-    delete_url = f"{url}/storage/v1/object/{SUPABASE_BUCKET}/{storage_path}"
+# ── Database (direct PostgreSQL — bypasses RLS) ─────────────────────────
 
-    req = urllib.request.Request(delete_url, method="DELETE")
-    req.add_header("apikey", key)
-    req.add_header("Authorization", f"Bearer {key}")
+def _get_db_conn():
+    import psycopg2
+    conn_str = _get_db_config()
+    if not conn_str:
+        raise RuntimeError("SUPABASE_DB_URL not configured")
+    return psycopg2.connect(conn_str)
 
-    try:
-        with urllib.request.urlopen(req) as resp:
-            resp.read()
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            return
-        err_body = e.read().decode()
-        raise RuntimeError(f"Storage delete failed ({e.code}): {err_body[:500]}")
-
-
-# ── Database ─────────────────────────────────────────────────────────────
 
 def create_document(filename: str, storage_path: str, file_size: int) -> Dict:
-    payload = {
-        "filename": filename,
-        "storage_path": storage_path,
-        "file_size": file_size,
-        "status": "uploaded",
-    }
-    log.info("create_document payload: %s", json.dumps(payload))
-    rows = _rest_request("POST", "documents", payload)
-    log.info("create_document OK: id=%s", rows[0].get("id"))
-    return rows[0]
+    conn = _get_db_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO public.documents (filename, storage_path, file_size, status)
+                   VALUES (%s, %s, %s, 'uploaded')
+                   RETURNING id, filename, storage_path, file_size, chunk_count, status, created_at""",
+                (filename, storage_path, file_size),
+            )
+            row = cur.fetchone()
+            conn.commit()
+            cols = [desc[0] for desc in cur.description]
+            result = dict(zip(cols, row))
+            log.info("create_document OK: id=%s", result["id"])
+            return result
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 def list_documents() -> List[Dict]:
-    return _rest_request("GET", "documents", params="order=created_at.desc")
+    conn = _get_db_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT id, filename, storage_path, file_size, chunk_count, status, created_at "
+                "FROM public.documents ORDER BY created_at DESC"
+            )
+            cols = [desc[0] for desc in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
+    finally:
+        conn.close()
 
 
 def get_document(doc_id: int) -> Optional[Dict]:
-    rows = _rest_request("GET", "documents", params=f"id=eq.{doc_id}&select=*")
-    return rows[0] if rows else None
+    conn = _get_db_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT id, filename, storage_path, file_size, chunk_count, status, created_at "
+                "FROM public.documents WHERE id = %s",
+                (doc_id,),
+            )
+            row = cur.fetchone()
+            if not row:
+                return None
+            cols = [desc[0] for desc in cur.description]
+            return dict(zip(cols, row))
+    finally:
+        conn.close()
 
 
 def delete_document(doc_id: int) -> None:
-    _rest_request("DELETE", "documents", params=f"id=eq.{doc_id}")
+    conn = _get_db_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM public.documents WHERE id = %s", (doc_id,))
+            conn.commit()
+    finally:
+        conn.close()
 
 
 def update_document(doc_id: int, updates: Dict) -> None:
-    _rest_request("PATCH", "documents", updates, params=f"id=eq.{doc_id}")
+    if not updates:
+        return
+    set_clause = ", ".join(f"{k} = %s" for k in updates)
+    values = list(updates.values()) + [doc_id]
+    conn = _get_db_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(f"UPDATE public.documents SET {set_clause} WHERE id = %s", values)
+            conn.commit()
+    finally:
+        conn.close()

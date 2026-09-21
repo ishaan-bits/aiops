@@ -10,7 +10,6 @@ from .routes.upload import router as upload_router
 from .routes.sql import router as sql_router
 from .routes.rag import router as rag_router
 from .routes.reports import router as reports_router
-from .schemas.upload import HealthResponse
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
@@ -19,7 +18,6 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
 )
 
-# Map OLLAMA_URL → OLLAMA_HOST so the ollama library picks it up
 if os.getenv("OLLAMA_URL") and not os.getenv("OLLAMA_HOST"):
     os.environ["OLLAMA_HOST"] = os.getenv("OLLAMA_URL", "http://localhost:11434")
 
@@ -41,6 +39,6 @@ app.include_router(rag_router)
 app.include_router(reports_router)
 
 
-@app.get("/health", response_model=HealthResponse)
+@app.get("/health")
 async def health():
-    return HealthResponse(status="ok", version="0.1.0")
+    return {"status": "ok", "version": "0.1.0"}

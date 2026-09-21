@@ -12,6 +12,8 @@ services:
         value: https://pjocwiwsbfarikzqpkbs.supabase.co
       - key: SUPABASE_SERVICE_KEY
         generateValue: false
+      - key: SUPABASE_DB_URL
+        generateValue: false
       - key: CORS_ORIGINS
         value: '["http://localhost:3000"]'
       - key: OLLAMA_URL

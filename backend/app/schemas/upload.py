@@ -17,8 +17,3 @@ class DocumentItem(BaseModel):
     chunk_count: int = 0
     status: str
     created_at: str
-
-
-class HealthResponse(BaseModel):
-    status: str
-    version: str

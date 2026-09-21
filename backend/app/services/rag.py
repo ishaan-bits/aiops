@@ -6,7 +6,7 @@ import sqlite3
 import tempfile
 from typing import List, Dict
 
-from .supabase_client import get_document, list_documents, update_document, download_document
+from .supabase_client import get_document, list_documents, update_document, storage_download
 
 INDEX_DIR = os.path.join(os.path.dirname(__file__), "..", "faiss_indexes")
 CHUNKS_DB = os.path.join(os.path.dirname(__file__), "..", "aiops_chunks.db")
@@ -40,7 +40,7 @@ def _get_chunks_db():
 
 
 def download_from_supabase(storage_path: str) -> str:
-    file_bytes = download_document(storage_path)
+    file_bytes = storage_download(storage_path)
     tmp_dir = tempfile.mkdtemp()
     local_path = os.path.join(tmp_dir, os.path.basename(storage_path))
     with open(local_path, "wb") as f:

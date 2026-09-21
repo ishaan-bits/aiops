@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+*.faiss
+*.env
+.DS_Store
+uploads/*
+!uploads/.gitkeep
+faiss_indexes/
+aiops_chunks.db
+.venv/
