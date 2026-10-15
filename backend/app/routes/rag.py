@@ -10,7 +10,7 @@ router = APIRouter(prefix="/rag", tags=["rag"])
 
 
 @router.post("/index/{document_id}", response_model=RAGIndexResponse)
-async def index_uploaded_document(document_id: int, _user: dict = Depends(require_user)):
+def index_uploaded_document(document_id: int, _user: dict = Depends(require_user)):
     try:
         result = index_document(document_id)
     except ValueError as e:
@@ -21,7 +21,7 @@ async def index_uploaded_document(document_id: int, _user: dict = Depends(requir
 
 
 @router.post("/ask", response_model=RAGAskResponse)
-async def ask_question(request: RAGAskRequest, _user: dict = Depends(require_user)):
+def ask_question(request: RAGAskRequest, _user: dict = Depends(require_user)):
     if not request.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty")
     try:

@@ -70,7 +70,7 @@
 - **FastAPI** + Uvicorn
 - **SQLite** (zero-config, file-based)
 - **FAISS** vector similarity search
-- **sentence-transformers** (`all-MiniLM-L6-v2`) for embeddings
+- **fastembed** (ONNX `all-MiniLM-L6-v2`) for embeddings
 - **PyMuPDF** + **python-docx** for document parsing
 - **Ollama** with `phi3:mini` for local AI inference
 

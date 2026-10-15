@@ -17,8 +17,8 @@ _model = None
 def _get_model():
     global _model
     if _model is None:
-        from sentence_transformers import SentenceTransformer
-        _model = SentenceTransformer("all-MiniLM-L6-v2")
+        from fastembed import TextEmbedding
+        _model = TextEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
     return _model
 
 
@@ -87,8 +87,7 @@ def chunk_text(text: str, chunk_size: int = 500, overlap: int = 75) -> List[str]
 def create_embeddings(chunks: List[str]):
     import numpy as np
     model = _get_model()
-    embeddings = model.encode(chunks, show_progress_bar=False, convert_to_numpy=True)
-    return embeddings.astype(np.float32)
+    return np.array(list(model.embed(chunks)), dtype=np.float32)
 
 
 def save_to_faiss(document_id: int) -> int:
@@ -162,13 +161,16 @@ def index_document(document_id: int) -> dict:
 def search_similar(question: str, top_k: int = 5) -> List[Dict]:
     import faiss
     import numpy as np
+
+    docs = [d for d in list_documents() if d.get("status") == "indexed"]
+    if not docs:
+        return []
+
     model = _get_model()
-    q_embedding = model.encode([question], convert_to_numpy=True).astype(np.float32)
+    q_embedding = np.array(list(model.embed([question])), dtype=np.float32)
     faiss.normalize_L2(q_embedding)
 
     results = []
-    docs = [d for d in list_documents() if d.get("status") == "indexed"]
-
     for doc in docs:
         doc_id = doc["id"]
         index_path = os.path.join(INDEX_DIR, f"doc_{doc_id}.faiss")
