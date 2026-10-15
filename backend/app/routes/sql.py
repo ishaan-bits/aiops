@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from ..schemas.sql import (
     SQLExecuteRequest,
@@ -10,6 +10,7 @@ from ..schemas.sql import (
     SQLGenerateRequest,
     SQLGenerateResponse,
 )
+from ..services.auth import require_user
 from ..services.sql import execute_query, get_sample_data, get_table_schema
 
 router = APIRouter(prefix="/sql", tags=["sql"])
@@ -196,13 +197,13 @@ def generate_sql(question: str) -> tuple[str, str]:
 
 
 @router.post("/generate", response_model=SQLGenerateResponse)
-async def generate_sql_query(request: SQLGenerateRequest):
+async def generate_sql_query(request: SQLGenerateRequest, _user: dict = Depends(require_user)):
     sql, explanation = generate_sql(request.question)
     return SQLGenerateResponse(sql=sql, explanation=explanation)
 
 
 @router.post("/execute", response_model=SQLExecuteResponse)
-async def execute_sql_query(request: SQLExecuteRequest):
+async def execute_sql_query(request: SQLExecuteRequest, _user: dict = Depends(require_user)):
     try:
         result = execute_query(request.sql)
     except ValueError as e:
@@ -215,7 +216,7 @@ async def execute_sql_query(request: SQLExecuteRequest):
 
 
 @router.get("/schema")
-async def get_schema():
+async def get_schema(_user: dict = Depends(require_user)):
     return {
         "table": "vendor_payments",
         "columns": get_table_schema(),

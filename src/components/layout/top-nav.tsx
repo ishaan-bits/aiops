@@ -1,15 +1,42 @@
 "use client";
 
-import { Menu, Bell, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Bell, LogOut, Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { fetchMe, logout } from "@/services/auth";
+import type { MeResponse } from "@/services/auth";
 
 interface TopNavProps {
   onMenuToggle?: () => void;
 }
 
 export function TopNav({ onMenuToggle }: TopNavProps) {
+  const [user, setUser] = useState<MeResponse | null>(null);
+
+  useEffect(() => {
+    fetchMe()
+      .then(setUser)
+      .catch(async () => {
+        try {
+          await logout();
+        } catch {
+          /* ignore — cookie clear failed */
+        }
+        window.location.replace("/login");
+      });
+  }, []);
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } catch {
+      /* ignore */
+    }
+    window.location.href = "/";
+  }
+
   return (
     <header className="flex h-14 items-center gap-3 border-b dark:border-white/[0.06] border-gray-200 dark:bg-white/[0.02] bg-white backdrop-blur-xl px-4 lg:px-5">
       <Button
@@ -46,9 +73,23 @@ export function TopNav({ onMenuToggle }: TopNavProps) {
 
       <ThemeToggle />
 
-      <Avatar className="h-7 w-7 border dark:border-white/[0.08] border-gray-200 bg-gradient-to-br from-indigo-500 to-violet-500">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={handleLogout}
+        title="Sign out"
+        className="h-8 w-8 dark:text-white/40 text-gray-500 hover:text-red-400 dark:hover:text-red-400 hover:bg-red-500/10 dark:hover:bg-red-500/10"
+      >
+        <LogOut className="h-3.5 w-3.5" />
+        <span className="sr-only">Sign out</span>
+      </Button>
+
+      <Avatar
+        className="h-7 w-7 border dark:border-white/[0.08] border-gray-200 bg-gradient-to-br from-indigo-500 to-violet-500"
+        title={user ? `${user.user_id} (${user.role})` : undefined}
+      >
         <AvatarFallback className="text-[10px] font-semibold text-white bg-transparent">
-          U
+          {user ? user.user_id[0].toUpperCase() : "…"}
         </AvatarFallback>
       </Avatar>
     </header>

@@ -3,10 +3,10 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
-import tempfile
 from typing import List, Dict
 
-from .supabase_client import get_document, list_documents, update_document, storage_download
+from .database import get_document, list_documents, update_document
+from .storage import get_path
 
 INDEX_DIR = os.path.join(os.path.dirname(__file__), "..", "faiss_indexes")
 CHUNKS_DB = os.path.join(os.path.dirname(__file__), "..", "aiops_chunks.db")
@@ -37,15 +37,6 @@ def _get_chunks_db():
     """)
     conn.commit()
     return conn
-
-
-def download_from_supabase(storage_path: str) -> str:
-    file_bytes = storage_download(storage_path)
-    tmp_dir = tempfile.mkdtemp()
-    local_path = os.path.join(tmp_dir, os.path.basename(storage_path))
-    with open(local_path, "wb") as f:
-        f.write(file_bytes)
-    return local_path
 
 
 def extract_text(file_path: str) -> List[Dict]:
@@ -142,17 +133,12 @@ def index_document(document_id: int) -> dict:
         raise ValueError(f"Document {document_id} not found")
 
     storage_path = doc["storage_path"]
-    local_path = None
-
-    try:
-        local_path = download_from_supabase(storage_path)
-        pages = extract_text(local_path)
-    finally:
-        if local_path and os.path.exists(local_path):
-            os.remove(local_path)
-            parent = os.path.dirname(local_path)
-            if parent and os.path.isdir(parent) and not os.listdir(parent):
-                os.rmdir(parent)
+    local_path = get_path(storage_path)
+    if not os.path.exists(local_path):
+        raise RuntimeError(
+            f"Uploaded file for document {document_id} is missing from local storage"
+        )
+    pages = extract_text(local_path)
 
     total_chunks = 0
     conn = _get_chunks_db()

@@ -1,20 +1,13 @@
 from __future__ import annotations
 
 import logging
-import os
 import uuid
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
 from ..schemas.upload import DocumentItem, UploadResponse
-from ..services.supabase_client import (
-    create_document,
-    delete_document,
-    get_document,
-    list_documents,
-    storage_delete,
-    storage_upload,
-)
+from ..services import database, storage
+from ..services.auth import require_user
 
 log = logging.getLogger(__name__)
 router = APIRouter()
@@ -24,13 +17,8 @@ MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB
 
 
 @router.get("/documents", response_model=list[DocumentItem])
-async def get_documents():
-    try:
-        rows = list_documents()
-    except Exception as e:
-        log.exception("list_documents failed")
-        raise HTTPException(status_code=500, detail=f"Failed to load documents: {e}")
-
+async def get_documents(_user: dict = Depends(require_user)):
+    rows = database.list_documents()
     return [
         DocumentItem(
             id=r["id"],
@@ -46,7 +34,7 @@ async def get_documents():
 
 
 @router.post("/documents/upload", response_model=UploadResponse)
-async def post_upload(file: UploadFile = File(...)):
+async def post_upload(file: UploadFile = File(...), _user: dict = Depends(require_user)):
     if not file.filename:
         raise HTTPException(status_code=400, detail="Filename is required")
 
@@ -59,25 +47,24 @@ async def post_upload(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="File exceeds 50 MB limit")
 
     storage_path = f"{uuid.uuid4().hex}{ext}"
-    content_type = file.content_type or "application/octet-stream"
 
-    # Step 1: Upload to Storage
+    # Step 1: Write file to local storage
     try:
-        storage_upload(file_bytes, storage_path, content_type)
+        storage.save_file(file_bytes, storage_path)
     except Exception as e:
-        log.exception("Storage upload failed")
-        raise HTTPException(status_code=500, detail=f"Storage upload failed: {e}")
+        log.exception("File storage failed")
+        raise HTTPException(status_code=500, detail=f"File storage failed: {e}")
 
-    # Step 2: Insert metadata — rollback storage on failure
+    # Step 2: Insert metadata — remove the file on failure
     try:
-        doc = create_document(
+        doc = database.create_document(
             filename=file.filename,
             storage_path=storage_path,
             file_size=len(file_bytes),
         )
     except Exception as insert_err:
         try:
-            storage_delete(storage_path)
+            storage.delete_file(storage_path)
         except Exception:
             log.warning("Storage rollback failed for %s", storage_path)
 
@@ -94,19 +81,19 @@ async def post_upload(file: UploadFile = File(...)):
 
 
 @router.delete("/documents/{doc_id}")
-async def delete_doc(doc_id: int):
-    doc = get_document(doc_id)
+async def delete_doc(doc_id: int, _user: dict = Depends(require_user)):
+    doc = database.get_document(doc_id)
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
 
     if doc.get("storage_path"):
         try:
-            delete_storage_object(doc["storage_path"])
+            storage.delete_file(doc["storage_path"])
         except Exception:
             pass
 
     try:
-        delete_document(doc_id)
+        database.delete_document(doc_id)
     except Exception as e:
         log.exception("delete_document failed for id=%d", doc_id)
         raise HTTPException(status_code=500, detail=f"Failed to delete document: {e}")

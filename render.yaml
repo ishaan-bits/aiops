@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: aiops-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: bash backend/start.sh
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: DEMO_PASSWORD
+        value: "AiOps123"
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: "openai/gpt-oss-120b"
+      - key: OLLAMA_URL
+        value: ""
+      - key: CORS_ORIGINS
+        value: '["http://localhost:3000"]'

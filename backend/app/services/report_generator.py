@@ -4,6 +4,8 @@ import sqlite3
 import os
 from datetime import datetime
 
+from .llm import chat
+
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "aiops.db")
 
 
@@ -272,16 +274,13 @@ Write a concise, professional executive summary (3-5 paragraphs) covering:
 Be specific with numbers. Do not hallucinate data not provided above."""
 
     try:
-        import ollama
-        response = ollama.chat(
-            model="phi3:mini",
-            messages=[
+        return chat(
+            [
                 {"role": "system", "content": "You are an enterprise AI analyst. Write professional executive summaries."},
                 {"role": "user", "content": prompt},
             ],
-            options={"temperature": 0.3},
+            temperature=0.3,
         )
-        return response["message"]["content"]
     except Exception:
         # Fallback if Ollama is not available
         total_spend = next((k["value"] for k in kpis if k["label"] == "Total Spend"), "N/A")
@@ -401,16 +400,13 @@ Respond with ONLY a JSON object (no markdown, no explanation):
 {{"template": "<executive|vendor|payable|risk>", "confidence": <0.0-1.0>, "filters": {{"department": null, "vendor": null, "overdue": null, "month": null, "top_n": null}}}}"""
 
     try:
-        import ollama
-        response = ollama.chat(
-            model="phi3:mini",
-            messages=[
+        raw = chat(
+            [
                 {"role": "system", "content": "You are a precise JSON classifier. Return only valid JSON."},
                 {"role": "user", "content": classification_prompt},
             ],
-            options={"temperature": 0.1},
-        )
-        raw = response["message"]["content"].strip()
+            temperature=0.1,
+        ).strip()
         # Strip markdown code fences if present
         if raw.startswith("```"):
             raw = raw.split("\n", 1)[-1]
@@ -470,16 +466,13 @@ Here are the key metrics:
 Based on the user's question and these metrics, write a brief 2-3 sentence executive response that directly addresses what the user asked. Be specific with numbers. Be professional and concise."""
 
     try:
-        import ollama
-        response = ollama.chat(
-            model="phi3:mini",
-            messages=[
+        ai_summary = chat(
+            [
                 {"role": "system", "content": "You are an enterprise AI analyst. Write concise, data-driven executive responses."},
                 {"role": "user", "content": classification_prompt},
             ],
-            options={"temperature": 0.3},
+            temperature=0.3,
         )
-        ai_summary = response["message"]["content"]
     except Exception:
         ai_summary = report["summary"][:300] + "..."
 
